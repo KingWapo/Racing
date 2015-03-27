@@ -26,7 +26,7 @@ public class winnerScript : MonoBehaviour {
 	void Update () {
       //  print(agentScript.enemyWinner);
 
-        print(enemyLap.lap);
+        //print(enemyLap.lap);
         if (var == 1)
         {
             if (playerLap.lap == 4)

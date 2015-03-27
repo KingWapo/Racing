@@ -1,18 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class countDownScript : MonoBehaviour {
 
     public float countDown = 1;
-    public GameObject player;
-    public GameObject enemy001;
-    public GameObject enemy002;
-    public GameObject enemy003;
-    public GameObject enemy004;
-    public GameObject enemy005;
+    public GameObject RacerParent;
 
-    Text text;
+    private Text text;
+    private bool setStart;
 
 
 	// Use this for initialization
@@ -20,22 +17,13 @@ public class countDownScript : MonoBehaviour {
         text = GetComponent<Text>();
         
         text.enabled = false;
-
+        setStart = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if(Time.time <=1)
         {
-            player.GetComponent<xboxController>().enabled = false;
-            enemy001.GetComponent<agentScript>().enabled = false;
-            enemy002.GetComponent<agentScript>().enabled = false;
-            enemy003.GetComponent<agentScript>().enabled = false;
-            enemy004.GetComponent<agentScript>().enabled = false;
-            enemy005.GetComponent<agentScript>().enabled = false;
-            
-
-
             text.enabled = false;
         }
         else if(Time.time <=2)
@@ -55,17 +43,15 @@ public class countDownScript : MonoBehaviour {
         {
             text.text = "GO!";
 
-            enemy001.GetComponent<agentScript>().target = 2;
-            enemy002.GetComponent<agentScript>().target = 2;
-            enemy003.GetComponent<agentScript>().target = 2;
-            enemy004.GetComponent<agentScript>().target = 2;
-            enemy005.GetComponent<agentScript>().target = 2;
-            player.GetComponent<xboxController>().enabled = true;
-            enemy001.GetComponent<agentScript>().enabled = true;
-            enemy002.GetComponent<agentScript>().enabled = true;
-            enemy003.GetComponent<agentScript>().enabled = true;
-            enemy004.GetComponent<agentScript>().enabled = true;
-            enemy005.GetComponent<agentScript>().enabled = true;
+            if (!setStart)
+            {
+                for (int i = 0; i < RacerParent.transform.childCount; i++)
+                {
+                    if (RacerParent.transform.GetChild(i).gameObject.activeSelf)
+                        RacerParent.transform.GetChild(i).gameObject.GetComponent<Racer>().HitGo();
+                }
+                setStart = true;
+            }
         }
         else
         {

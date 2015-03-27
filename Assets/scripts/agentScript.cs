@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class agentScript : MonoBehaviour {
 
@@ -22,7 +23,7 @@ public class agentScript : MonoBehaviour {
     public GameObject checkPoint007;
     public GameObject checkPoint008;
     public GameObject checkPoint009;
-    NavMeshAgent agent;
+    private NavMeshAgent agent;
 
 	// Use this for initialization
 	void Start () {
@@ -111,6 +112,5 @@ public class agentScript : MonoBehaviour {
         {
             target = 1;
         }
-        
     }
 }

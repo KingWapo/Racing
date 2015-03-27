@@ -8,20 +8,20 @@ public class xboxController : MonoBehaviour {
     public float playerReverse;
     public float playerRotation = 300;
     public float lean;
-	
-	// Update is called once per frame
 
     void Start()
     {
         playerAccel = 0;
         lean = 0;
     }
+
 	void Update () {
         UserInput();
 	}
+
     void UserInput()
     {
-        if(Input.GetAxis("Horizontal") == 1)
+        if(Input.GetAxis("Horizontal") > 0)
         {
             transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * playerRotation, 0);
             if(playerAccel > 0)
@@ -38,7 +38,7 @@ public class xboxController : MonoBehaviour {
             }
         }
 
-        else if (Input.GetAxis("Horizontal") == -1)
+        else if (Input.GetAxis("Horizontal") < 0)
         {
             transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * playerRotation, 0);
             if(playerAccel > 0)
