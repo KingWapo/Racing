@@ -31,8 +31,7 @@ public class Racer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
-        if (!isAI && canGo)
+        if (GetComponent<NetworkView>().isMine && !isAI && canGo)
         {
             UpdateInput();
         }

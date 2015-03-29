@@ -7,7 +7,9 @@ public class networkManager : MonoBehaviour {
     enum MenuIndex {
         MainMenu,
         ServerList,
-        GameLobby
+        HostGame,
+        GameLobby,
+        None
     };
 
     private MenuIndex currentMenu;
@@ -21,9 +23,13 @@ public class networkManager : MonoBehaviour {
 
     // Server information
     private const string typeName = "JakesRacingGameThing";
-    private const string gameName = "BrandonLaptop";
+    private string gameName = "";
+    private string gamePass = "";
 
     private HostData[] hostList;
+
+    // Player prefab
+    public GameObject playerRacer;
 
 	// Use this for initialization
 	void Start () {
@@ -36,10 +42,16 @@ public class networkManager : MonoBehaviour {
 	}
 
     void OnGUI() {
+        int btnX = 0;
+        int btnY = 0;
+
         switch (currentMenu) {
             case MenuIndex.MainMenu:
+                btnX = (Screen.width - btnW) / 2;
                 for (int i = 0; i < mainMenuButtons.Length; i++) {
-                    if (GUI.Button(new Rect((Screen.width - btnW) / 2, (Screen.height / 2) - (btnH * (mainMenuButtons.Length - i)) + (btnPadding * i), btnW, btnH), mainMenuButtons[i])) {
+                    btnY = (Screen.height / 2) - (btnH * (mainMenuButtons.Length - i)) + (btnPadding * i);
+
+                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), mainMenuButtons[i])) {
                         switch (i) {
                             case 0:
                                 Debug.Log("SinglePlayer");
@@ -67,15 +79,16 @@ public class networkManager : MonoBehaviour {
                 
                 break;
             case MenuIndex.ServerList:
-                int btnX = 200;
-                int btnY = 200;
+                btnX = 200;
+                btnY = 200;
+
                 if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
                     ShowMenu(MenuIndex.MainMenu);
                 }
 
                 if (!Network.isClient && !Network.isServer) {
-                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
-                        StartServer();
+                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Host Game")) {
+                        ShowMenu(MenuIndex.HostGame);
                     }
                 }
 
@@ -87,12 +100,37 @@ public class networkManager : MonoBehaviour {
                     for (int i = 0; i < hostList.Length; i++) {
                         if (GUI.Button(new Rect(btnX, btnY + (btnH + btnPadding) * (i + 1), btnW * 3, btnH), hostList[i].gameName)) {
                             JoinServer(hostList[i]);
+                            ShowMenu(MenuIndex.None);
                         }
                     }
                 }
 
                 break;
+            case MenuIndex.HostGame:
+                btnX = 200;
+                btnY = 200;
+
+                gameName = GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), gameName, 25);
+                gamePass = GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 2, btnW, btnH), gamePass, 25);
+
+                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
+                    ShowMenu(MenuIndex.MainMenu);
+                }
+
+                if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
+                    if (gameName != "") {
+                        StartServer();
+                        ShowMenu(MenuIndex.None);
+                    }
+                }
+
+                break;
             case MenuIndex.GameLobby:
+                break;
+            case MenuIndex.None:
+                if (GUI.Button(new Rect(30, 30, btnH, btnH), "X")) {
+                    Application.Quit();
+                }
                 break;
         }
     }
@@ -103,20 +141,12 @@ public class networkManager : MonoBehaviour {
 
         Network.InitializeServer(4, 25000, !Network.HavePublicAddress());
 
-        string fixedGameName = gameName;
-
-        // remove when finished - bfelch
-        if (hostList != null) {
-            fixedGameName += hostList.Length;
-        } else {
-            fixedGameName += "0";
-        }
-
-        MasterServer.RegisterHost(typeName, fixedGameName);
+        MasterServer.RegisterHost(typeName, gameName);
     }
 
     void OnServerInitialized() {
         Debug.Log("Server Initialized");
+        SpawnPlayer();
     }
 
     // Refresh host list
@@ -136,10 +166,19 @@ public class networkManager : MonoBehaviour {
 
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
+        SpawnPlayer();
     }
 
     // Displayed menu
     void ShowMenu(MenuIndex index) {
         currentMenu = index;
+
+        if (index == MenuIndex.ServerList) {
+            RefreshHostList();
+        }
+    }
+
+    private void SpawnPlayer() {
+        Network.Instantiate(playerRacer, new Vector3(Random.Range(-5f, 5f), .6f, Random.Range(-5f, 5f)), Quaternion.identity, 0);
     }
 }
