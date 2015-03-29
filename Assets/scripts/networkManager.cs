@@ -179,6 +179,7 @@ public class networkManager : MonoBehaviour {
     }
 
     private void SpawnPlayer() {
-        Network.Instantiate(playerRacer, new Vector3(Random.Range(-5f, 5f), .6f, Random.Range(-5f, 5f)), Quaternion.identity, 0);
+        float edge = 3f;
+        Network.Instantiate(playerRacer, new Vector3(Random.Range(-edge, edge), .6f, Random.Range(-edge, edge)), Quaternion.identity, 0);
     }
 }
