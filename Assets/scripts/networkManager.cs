@@ -12,6 +12,7 @@ public class networkManager : MonoBehaviour {
     private const string typeName = "JakesRacingGameThing";
     private string gameName = "";
     private string gamePass = "";
+    private int numPlayers = 8;
 
     private HostData[] hostList;
 
@@ -42,9 +43,15 @@ public class networkManager : MonoBehaviour {
     public void StartServer() {
         RefreshHostList();
 
-        Network.InitializeServer(4, 25000, !Network.HavePublicAddress());
+        Network.incomingPassword = gamePass;
+        Network.InitializeServer(numPlayers, 25000, !Network.HavePublicAddress());
 
         MasterServer.RegisterHost(typeName, gameName);
+    }
+
+    public void StartPrivateServer() {
+        gamePass = "myPrivateServer";
+        numPlayers = 1;
     }
 
     void OnServerInitialized() {
@@ -70,6 +77,10 @@ public class networkManager : MonoBehaviour {
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
         //SpawnPlayer();
+    }
+
+    void OnPlayerDisconnected(NetworkPlayer player) {
+        Network.DestroyPlayerObjects(player);
     }
 
     // Disconnect from server

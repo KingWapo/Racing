@@ -40,7 +40,7 @@ public class mainMenu : MonoBehaviour {
                             case 0:
                                 Debug.Log("SinglePlayer");
                                 networkManager.SetGameName("private game");
-                                networkManager.StartServer();
+                                networkManager.StartPrivateServer();
                                 ShowMenu(MenuIndex.GameLobby);
                                 break;
                             case 1:
@@ -131,6 +131,8 @@ public class mainMenu : MonoBehaviour {
                 break;
             case MenuIndex.None:
                 if (GUI.Button(new Rect(30, 30, btnH, btnH), "X")) {
+                    Network.DestroyPlayerObjects(Network.player);
+                    Network.Disconnect();
                     Application.Quit();
                 }
 
