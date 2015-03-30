@@ -28,6 +28,14 @@ public class PlayerController : Controller
 	
 	}
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Waypoint")
+        {
+            waypointsHit++;
+        }
+    }
+
     public override void UpdateMovement()
     {
         base.UpdateMovement();

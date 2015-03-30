@@ -19,6 +19,8 @@ public class playerRacer : MonoBehaviour {
     private float maxForwardVel = 30f;
     private float maxReverseVel = -4f;
 
+    public Controller controller;
+
     // Synchronization values
     private float lastSynchronizationTime = 0f;
     private float syncDelay = 0f;
@@ -43,12 +45,19 @@ public class playerRacer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (GetComponent<NetworkView>().isMine) {
-            InputMovement();
+            controller.UpdateMovement();
+            //InputMovement();
         } else {
             SyncedMovement();
         }
 	}
 
+    public void AddController(Controller newController)
+    {
+        controller = newController;
+    }
+
+    /*
     void InputMovement() {
         float turnAxis = Input.GetAxis("Horizontal");
         float acclAxis = Input.GetAxis("360_Triggers");
@@ -81,7 +90,7 @@ public class playerRacer : MonoBehaviour {
         transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
 
         //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
-    }
+    }*/
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;

@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Controller : MonoBehaviour {
 
+    protected int waypointsHit;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -18,6 +20,9 @@ public class Controller : MonoBehaviour {
 
     }
 
-
+    virtual public int Score()
+    {
+        return waypointsHit;
+    }
 
 }
