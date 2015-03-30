@@ -17,7 +17,7 @@ public class AIController : Controller
 	void Start () {
 	    if (!GetComponent<NavMeshAgent>())
         {
-            
+            gameObject.AddComponent<NavMeshAgent>();
         }
         else
         {
@@ -30,7 +30,7 @@ public class AIController : Controller
 	
 	}
 
-    virtual void UpdateMovement()
+    public override void UpdateMovement()
     {
 
     }
