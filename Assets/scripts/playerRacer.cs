@@ -12,6 +12,7 @@ public class playerRacer : MonoBehaviour {
 
     private float playerRotation = 300f;
     private float playerLean = 0f;
+    private float maxLean = 12f;
 
     private float playerVelocity = 0f;
 
@@ -30,6 +31,13 @@ public class playerRacer : MonoBehaviour {
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
+
+        if (GetComponent<NetworkView>().isMine) {
+            Camera.main.transform.parent = transform;
+
+            Camera.main.transform.localPosition = new Vector3(-3, 1, 0);
+            Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, 0));
+        }
 	}
 	
 	// Update is called once per frame
@@ -47,21 +55,21 @@ public class playerRacer : MonoBehaviour {
         Debug.Log("trigger - " + acclAxis);
 
         if (turnAxis != 0) {
-            transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity, 0);
-
-            if (playerLean >= -12 && playerLean <= 12) {
-                playerLean -= Mathf.Sign(turnAxis);
-            }
+            playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxLean, maxLean);
         } else {
-            if (playerLean > 0) {
-                playerLean -= 1;
-            } else if (playerLean < 0) {
-                playerLean += 1;
+            if (playerLean > 0f) {
+                playerLean -= 1f;
+            } else if (playerLean < 0f) {
+                playerLean += 1f;
             }
         }
 
         if (acclAxis > .1f || acclAxis < -.1f) {
-                playerVelocity = Mathf.Max(maxReverseVel, Mathf.Min(maxForwardVel, playerVelocity + .5f * acclAxis));
+            if (turnAxis != 0) {
+                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
+            }
+
+            playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
         } else {
             playerVelocity *= .9f;
             if (Mathf.Abs(playerVelocity) <= .000f) {
@@ -71,6 +79,8 @@ public class playerRacer : MonoBehaviour {
 
         transform.Rotate(playerLean, 0, 0);
         transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
+
+        //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
     }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {

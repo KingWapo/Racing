@@ -1,25 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(NetworkView))]
 public class networkManager : MonoBehaviour {
-
-    // Menu screens
-    enum MenuIndex {
-        MainMenu,
-        ServerList,
-        HostGame,
-        GameLobby,
-        None
-    };
-
-    private MenuIndex currentMenu;
 
     private int btnW = 160;
     private int btnH = 30;
     private int btnPadding = 10;
-
-    // Main menu button text
-    string[] mainMenuButtons = { "Single Player", "Multiplayer", "Controls", "Options", "Exit Game" };
 
     // Server information
     private const string typeName = "JakesRacingGameThing";
@@ -31,112 +18,28 @@ public class networkManager : MonoBehaviour {
     // Player prefab
     public GameObject playerRacer;
 
+    // Level loading information
+    private string[] supportedNetworkLevels = new[] { "NetworkTest" };
+    private string disconnectedLevel = "MainMenu";
+    private int lastLevelPrefix = 0;
+    private new NetworkView networkView;
+
+    private bool loadingLevel;
+
+    void Awake() {
+    }
 	// Use this for initialization
 	void Start () {
-        currentMenu = MenuIndex.MainMenu;
+        // Network level loading is done in a separate channel
+        DontDestroyOnLoad(this);
+        Debug.Log(gameObject.name);
+        networkView = GetComponent<NetworkView>();
+        networkView.group = 1;
+        //Application.LoadLevel(disconnectedLevel);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    void OnGUI() {
-        int btnX = 0;
-        int btnY = 0;
-
-        switch (currentMenu) {
-            case MenuIndex.MainMenu:
-                btnX = (Screen.width - btnW) / 2;
-                for (int i = 0; i < mainMenuButtons.Length; i++) {
-                    btnY = (Screen.height / 2) - (btnH * (mainMenuButtons.Length - i)) + (btnPadding * i);
-
-                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), mainMenuButtons[i])) {
-                        switch (i) {
-                            case 0:
-                                Debug.Log("SinglePlayer");
-                                ShowMenu(MenuIndex.GameLobby);
-                                break;
-                            case 1:
-                                Debug.Log("Multiplayer");
-                                ShowMenu(MenuIndex.ServerList);
-                                break;
-                            case 2:
-                                Debug.Log("Controls");
-                                break;
-                            case 3:
-                                Debug.Log("Options");
-                                break;
-                            case 4:
-                                Debug.Log("ExitGame");
-                                Application.Quit();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                
-                break;
-            case MenuIndex.ServerList:
-                btnX = 200;
-                btnY = 200;
-
-                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
-                    ShowMenu(MenuIndex.MainMenu);
-                }
-
-                if (!Network.isClient && !Network.isServer) {
-                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Host Game")) {
-                        ShowMenu(MenuIndex.HostGame);
-                    }
-                }
-
-                if (GUI.Button(new Rect(btnX + btnW + btnPadding, btnY, btnW, btnH), "Refresh List")) {
-                    RefreshHostList();
-                }
-
-                if (hostList != null) {
-                    for (int i = 0; i < hostList.Length; i++) {
-                        if (GUI.Button(new Rect(btnX, btnY + (btnH + btnPadding) * (i + 1), btnW * 3, btnH), hostList[i].gameName)) {
-                            JoinServer(hostList[i]);
-                            ShowMenu(MenuIndex.None);
-                        }
-                    }
-                }
-
-                break;
-            case MenuIndex.HostGame:
-                btnX = 200;
-                btnY = 200;
-
-                gameName = GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), gameName, 25);
-                gamePass = GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 2, btnW, btnH), gamePass, 25);
-
-                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
-                    ShowMenu(MenuIndex.MainMenu);
-                }
-
-                if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
-                    if (gameName != "") {
-                        StartServer();
-                        ShowMenu(MenuIndex.None);
-                    }
-                }
-
-                break;
-            case MenuIndex.GameLobby:
-                break;
-            case MenuIndex.None:
-                if (GUI.Button(new Rect(30, 30, btnH, btnH), "X")) {
-                    Application.Quit();
-                }
-                break;
-        }
-    }
 
     // Server initialization
-    private void StartServer() {
+    public void StartServer() {
         RefreshHostList();
 
         Network.InitializeServer(4, 25000, !Network.HavePublicAddress());
@@ -146,11 +49,11 @@ public class networkManager : MonoBehaviour {
 
     void OnServerInitialized() {
         Debug.Log("Server Initialized");
-        SpawnPlayer();
+        //SpawnPlayer();
     }
 
     // Refresh host list
-    private void RefreshHostList() {
+    public void RefreshHostList() {
         MasterServer.RequestHostList(typeName);
     }
 
@@ -160,26 +63,101 @@ public class networkManager : MonoBehaviour {
     }
 
     // Join existing server
-    private void JoinServer(HostData hostData) {
+    public void JoinServer(HostData hostData) {
         Network.Connect(hostData);
     }
 
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
-        SpawnPlayer();
+        //SpawnPlayer();
     }
 
-    // Displayed menu
-    void ShowMenu(MenuIndex index) {
-        currentMenu = index;
+    // Disconnect from server
+    void OnDisconnectedFromServer() {
+        Application.LoadLevel(disconnectedLevel);
+    }
 
-        if (index == MenuIndex.ServerList) {
-            RefreshHostList();
+    public HostData[] GetHostList() {
+        return hostList;
+    }
+
+    public string GetGameName() {
+        return gameName;
+    }
+
+    public void SetGameName(string name) {
+        gameName = name;
+    }
+
+    public string GetGamePass() {
+        return gamePass;
+    }
+
+    public void SetGamePass(string pass) {
+        gamePass = pass;
+    }
+
+    public bool isLoadingLevel() {
+        return loadingLevel;
+    }
+
+    public string[] GetSupportedNetworkLevels() {
+        return supportedNetworkLevels;
+    }
+
+    public void LoadNewLevel(string level) {
+        networkView.RPC("LoadLevel", RPCMode.AllBuffered, level, lastLevelPrefix + 1);
+    }
+
+    // Load Levels
+    [RPC]
+    IEnumerator LoadLevel(string level, int levelPrefix) {
+        lastLevelPrefix = levelPrefix;
+        loadingLevel = true;
+
+        // Stop sending data so we can load level
+        Network.SetSendingEnabled(0, false);
+
+        // Stop receiving data so we can load level;
+        Network.isMessageQueueRunning = false;
+
+        // Give network view id a prefix to prevent old updates from clients
+        Network.SetLevelPrefix(levelPrefix);
+        Application.LoadLevel(level);
+        Debug.Log("Gone to level - " + level);
+        yield return 1;
+
+        // Allow receiving data again
+        Network.isMessageQueueRunning = true;
+
+        // Allow sending data again
+        Network.SetSendingEnabled(0, true);
+
+        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+
+        foreach(GameObject go in gameObjects) {
+            go.SendMessage("OnNetworkLoadedLevel", SendMessageOptions.DontRequireReceiver);
         }
+
+        loadingLevel = false;
+    }
+
+    public void SpawnClientRacers() {
+        networkView.RPC("SpawnRacer", RPCMode.AllBuffered);
+    }
+
+    [RPC]
+    public IEnumerator SpawnRacer() {
+        while (loadingLevel) {
+            yield return new WaitForSeconds(.1f);
+        }
+
+        SpawnPlayer();
+        yield return 1;
     }
 
     private void SpawnPlayer() {
-        float edge = 3f;
+        float edge = 10f;
         Network.Instantiate(playerRacer, new Vector3(Random.Range(-edge, edge), .6f, Random.Range(-edge, edge)), Quaternion.identity, 0);
     }
 }

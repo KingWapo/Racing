@@ -4,136 +4,146 @@ using UnityEngine.UI;
 
 public class mainMenu : MonoBehaviour {
 
-    enum MenuIndex {
+    // Menu screens
+    public enum MenuIndex {
         MainMenu,
         ServerList,
-        GameLobby
+        HostGame,
+        GameLobby,
+        None
     };
 
-    public GameObject[] menus;
+    public MenuIndex currentMenu;
 
-    public Button singlePlayer;
-    public Button multiplayer;
-    public Button controls;
-    public Button options;
-    public Button exitGame;
+    private string[] mainMenuButtons = { "Single Player", "Multiplayer", "Controls", "Options", "Exit Game" };
+    private int btnX, btnY;
+    private int btnW = 160;
+    private int btnH = 30;
+    private int btnPadding = 10;
 
-    public Button host;
-    public Button join;
-    public Button refresh;
-    public Button menu;
+    public networkManager networkManager;
 
-    public Button addOne;
-    public Button addAll;
-    public Button removeOne;
-    public Button removeAll;
-    public Button start;
-    public Button leave;
-
-	// Use this for initialization
     void Start() {
-        singlePlayer.onClick.AddListener(() => { SinglePlayer(); });
-        multiplayer.onClick.AddListener(() => { Multiplayer(); });
-        controls.onClick.AddListener(() => { Controls(); });
-        options.onClick.AddListener(() => { Options(); });
-        exitGame.onClick.AddListener(() => { ExitGame(); });
-
-        host.onClick.AddListener(() => { Host(); });
-        join.onClick.AddListener(() => { Join(); });
-        refresh.onClick.AddListener(() => { Refresh(); });
-        menu.onClick.AddListener(() => { Menu(); });
-
-        addOne.onClick.AddListener(() => { AddOne(); });
-        addAll.onClick.AddListener(() => { AddAll(); });
-        removeOne.onClick.AddListener(() => { RemoveOne(); });
-        removeAll.onClick.AddListener(() => { RemoveAll(); });
-        start.onClick.AddListener(() => { StartGame(); });
-        leave.onClick.AddListener(() => { LeaveLobby(); });
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    void SinglePlayer() {
-        Debug.Log("SINGLE PLAYER");
-        //Application.LoadLevel("GameLobby");
-        ShowMenu(MenuIndex.GameLobby);
+        currentMenu = MenuIndex.MainMenu;
     }
 
-    void Multiplayer() {
-        Debug.Log("MULTIPLAYER");
-        //Application.LoadLevel("ServerList");
-        ShowMenu(MenuIndex.ServerList);
+    void OnGUI() {
+        switch (currentMenu) {
+            case MenuIndex.MainMenu:
+                btnX = (Screen.width - btnW) / 2;
+
+                for (int i = 0; i < mainMenuButtons.Length; i++) {
+                    btnY = (Screen.height / 2) - (btnH * (mainMenuButtons.Length - i)) + (btnPadding * i);
+
+                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), mainMenuButtons[i])) {
+                        switch (i) {
+                            case 0:
+                                Debug.Log("SinglePlayer");
+                                networkManager.SetGameName("private game");
+                                networkManager.StartServer();
+                                ShowMenu(MenuIndex.GameLobby);
+                                break;
+                            case 1:
+                                Debug.Log("Multiplayer");
+                                ShowMenu(MenuIndex.ServerList);
+                                break;
+                            case 2:
+                                Debug.Log("Controls");
+                                break;
+                            case 3:
+                                Debug.Log("Options");
+                                break;
+                            case 4:
+                                Debug.Log("ExitGame");
+                                Application.Quit();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                break;
+            case MenuIndex.ServerList:
+                btnX = 200;
+                btnY = 200;
+
+                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
+                    ShowMenu(MenuIndex.MainMenu);
+                }
+
+                if (!Network.isClient && !Network.isServer) {
+                    if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Host Game")) {
+                        ShowMenu(MenuIndex.HostGame);
+                    }
+                }
+
+                if (GUI.Button(new Rect(btnX + btnW + btnPadding, btnY, btnW, btnH), "Refresh List")) {
+                    networkManager.RefreshHostList();
+                }
+
+                HostData[] hostList = networkManager.GetHostList();
+
+                if (hostList != null) {
+                    for (int i = 0; i < hostList.Length; i++) {
+                        if (GUI.Button(new Rect(btnX, btnY + (btnH + btnPadding) * (i + 1), btnW * 3, btnH), hostList[i].gameName)) {
+                            networkManager.JoinServer(hostList[i]);
+                            ShowMenu(MenuIndex.GameLobby);
+                        }
+                    }
+                }
+
+                break;
+            case MenuIndex.HostGame:
+                btnX = 200;
+                btnY = 200;
+
+                networkManager.SetGameName(GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), networkManager.GetGameName(), 25));
+                networkManager.SetGamePass(GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 2, btnW, btnH), networkManager.GetGamePass(), 25));
+
+                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
+                    ShowMenu(MenuIndex.MainMenu);
+                }
+
+                if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
+                    if (networkManager.GetGameName() != "") {
+                        networkManager.StartServer();
+                        ShowMenu(MenuIndex.GameLobby);
+                    }
+                }
+
+                break;
+            case MenuIndex.GameLobby:
+                if (Network.peerType != NetworkPeerType.Disconnected) {
+                    string[] levels = networkManager.GetSupportedNetworkLevels();
+
+                    for (int i = 0; i < levels.Length; i++) {
+                        if (GUI.Button(new Rect(100, 50 + (60 * i), 160, 50), levels[i])) {
+                            Network.RemoveRPCsInGroup(0);
+                            Network.RemoveRPCsInGroup(1);
+                            networkManager.LoadNewLevel(levels[i]);
+                            networkManager.SpawnClientRacers();
+                            ShowMenu(MenuIndex.None);
+                        }
+                    }
+                }
+
+                break;
+            case MenuIndex.None:
+                if (GUI.Button(new Rect(30, 30, btnH, btnH), "X")) {
+                    Application.Quit();
+                }
+
+                break;
+        }
     }
 
-    void Controls() {
-        Debug.Log("CONTROLS");
-    }
-
-    void Options() {
-        Debug.Log("OPTIONS");
-    }
-
-    void ExitGame() {
-        Debug.Log("EXIT GAME");
-        Application.Quit();
-    }
-
-    void Host() {
-        Debug.Log("HOST GAME");
-    }
-
-    void Join() {
-        Debug.Log("JOIN GAME");
-        //Application.LoadLevel("GameLobby");
-        ShowMenu(MenuIndex.GameLobby);
-    }
-
-    void Refresh() {
-        Debug.Log("REFRESH LIST");
-    }
-
-    void Menu() {
-        Debug.Log("MAIN MENU");
-        //Application.LoadLevel("MainMenu");
-        ShowMenu(MenuIndex.MainMenu);
-    }
-
-    void AddOne() {
-        Debug.Log("ADD TRACK");
-    }
-
-    void AddAll() {
-        Debug.Log("ADD ALL");
-    }
-
-    void RemoveOne() {
-        Debug.Log("REMOVE TRACK");
-    }
-
-    void RemoveAll() {
-        Debug.Log("REMOVE ALL");
-    }
-
-    void StartGame() {
-        Debug.Log("START GAME");
-    }
-
-    void LeaveLobby() {
-        Debug.Log("LEAVE LOBBY");
-        //Application.LoadLevel("MainMenu");
-        ShowMenu(MenuIndex.MainMenu);
-    }
-
+    // Displayed menu
     void ShowMenu(MenuIndex index) {
-        for (int i = 0; i < menus.Length; i++) {
-            if ((MenuIndex) i != index) {
-                menus[i].SetActive(false);
-            } else {
-                menus[i].SetActive(true);
-            }
+        currentMenu = index;
+
+        if (index == MenuIndex.ServerList) {
+            networkManager.RefreshHostList();
         }
     }
 }
