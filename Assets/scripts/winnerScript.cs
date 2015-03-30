@@ -18,7 +18,7 @@ public class winnerScript : MonoBehaviour {
 	void Start () {
         text = GetComponent<Text>();
         text.enabled = false;
-        player.GetComponent<agentScript>().enabled = false;
+        //player.GetComponent<agentScript>().enabled = false;
         var = 1;
 	}
 	
