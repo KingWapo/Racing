@@ -36,7 +36,6 @@ public class networkManager : MonoBehaviour {
         Debug.Log(gameObject.name);
         networkView = GetComponent<NetworkView>();
         networkView.group = 1;
-        //Application.LoadLevel(disconnectedLevel);
 	}
 
     // Server initialization
@@ -52,6 +51,7 @@ public class networkManager : MonoBehaviour {
     public void StartPrivateServer() {
         gamePass = "myPrivateServer";
         numPlayers = 1;
+        StartServer();
     }
 
     void OnServerInitialized() {
@@ -77,6 +77,9 @@ public class networkManager : MonoBehaviour {
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
         //SpawnPlayer();
+    }
+
+    void OnPlayerConnected(NetworkPlayer player) {
     }
 
     void OnPlayerDisconnected(NetworkPlayer player) {
@@ -164,11 +167,25 @@ public class networkManager : MonoBehaviour {
         }
 
         SpawnPlayer();
+
         yield return 1;
     }
 
     private void SpawnPlayer() {
         float edge = 10f;
+
         Network.Instantiate(playerRacer, new Vector3(Random.Range(-edge, edge), .6f, Random.Range(-edge, edge)), Quaternion.identity, 0);
+    }
+
+    void OnGUI() {
+        int arrayindex = -1;
+        for (int i = 0; i < Network.connections.Length; i++) {
+            GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + Network.connections[i]);
+
+            if (Network.connections[i] == Network.player)
+                arrayindex = i;
+        }
+
+        GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + Network.connections.Length + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
     }
 }
