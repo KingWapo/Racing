@@ -188,21 +188,22 @@ public class networkManager : MonoBehaviour {
         startSpots spotList = startSpots.GetComponent<startSpots>();
 
         if (netPlayer == Network.player) {
-            Network.Instantiate(playerRacer, spotList.startPositions[index].transform.position, Quaternion.identity, 0);
+            Transform start = spotList.startPositions[index].transform;
+            Network.Instantiate(playerRacer, start.position, start.rotation, 0);
         }
     }
 
     void OnGUI() {
         if (Network.isServer) {
             int arrayindex = -1;
-            for (int i = 0; i < Network.connections.Length; i++) {
-                GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + Network.connections[i]);
+            for (int i = 0; i < playerList.Count; i++) {
+                GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + playerList[i]);
 
-                if (Network.connections[i] == Network.player)
+                if (playerList[i] == Network.player)
                     arrayindex = i;
             }
 
-            GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + Network.connections.Length + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
+            GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + playerList.Count + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
         }
     }
 }
