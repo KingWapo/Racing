@@ -5,15 +5,12 @@ using System.Collections.Generic;
 [RequireComponent(typeof(NetworkView))]
 public class networkManager : MonoBehaviour {
 
-    private int btnW = 160;
-    private int btnH = 30;
-    private int btnPadding = 10;
-
     // Server information
     private const string typeName = "JakesRacingGameThing";
     private string gameName = "";
     private string gamePass = "";
-    private int numPlayers = 8;
+    private int maxNumPlayers;
+    private int numPlayers;
 
     private HostData[] hostList;
 
@@ -39,6 +36,9 @@ public class networkManager : MonoBehaviour {
         Debug.Log(gameObject.name);
         networkView = GetComponent<NetworkView>();
         networkView.group = 1;
+
+        maxNumPlayers = 8;
+        numPlayers = maxNumPlayers;
 
         playerList = new List<NetworkPlayer>();
 	}
@@ -179,6 +179,11 @@ public class networkManager : MonoBehaviour {
             networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
         }
 
+
+        for (int i = playerList.Count; i < maxNumPlayers; i++) {
+            networkView.RPC("SpawnAI", RPCMode.AllBuffered, i);
+        }
+
         yield return 1;
     }
 
@@ -188,9 +193,21 @@ public class networkManager : MonoBehaviour {
         startSpots spotList = startSpots.GetComponent<startSpots>();
 
         if (netPlayer == Network.player) {
+            Debug.Log("spawned player: " + index);
             Transform start = spotList.startPositions[index].transform;
             Network.Instantiate(playerRacer, start.position, start.rotation, 0);
         }
+    }
+
+    [RPC]
+    private void SpawnAI(int index) {
+        GameObject startSpots = GameObject.Find("Start Spots");
+        startSpots spotList = startSpots.GetComponent<startSpots>();
+
+        Debug.Log("spawned ai: " + index);
+        Transform start = spotList.startPositions[index].transform;
+        // CHANGE TO AI RACER PREFAB
+        Network.Instantiate(playerRacer, start.position, start.rotation, 0);
     }
 
     void OnGUI() {

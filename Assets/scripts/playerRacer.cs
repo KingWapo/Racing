@@ -5,19 +5,19 @@ public class playerRacer : MonoBehaviour {
 
     public float speed = 10f;
 
-    private Rigidbody rigidbody;
-    private NavMeshAgent agent;
+    private new Rigidbody rigidbody;
+    //private NavMeshAgent agent;
 
-    private float sensitivity = .5f;
+    //private float sensitivity = .5f;
 
-    private float playerRotation = 300f;
-    private float playerLean = 0f;
-    private float maxLean = 12f;
+    //private float playerRotation = 300f;
+    //private float playerLean = 0f;
+    //private float maxLean = 12f;
 
-    private float playerVelocity = 0f;
+    //private float playerVelocity = 0f;
 
-    private float maxForwardVel = 30f;
-    private float maxReverseVel = -4f;
+    //private float maxForwardVel = 30f;
+    //private float maxReverseVel = -4f;
 
     public Controller controller;
 
@@ -32,13 +32,12 @@ public class playerRacer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
-        agent = GetComponent<NavMeshAgent>();
 
         if (GetComponent<NetworkView>().isMine) {
             Camera.main.transform.parent = transform;
 
             Camera.main.transform.localPosition = new Vector3(-3, 1, 0);
-            Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, 0));
+            //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, 0));
         }
 	}
 	

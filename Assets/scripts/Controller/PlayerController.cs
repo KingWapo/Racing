@@ -5,13 +5,14 @@ public class PlayerController : Controller
 {
     public float speed = 10f;
 
-    private Rigidbody rigidbody;
+    private new Rigidbody rigidbody;
     private NavMeshAgent agent;
 
     private float sensitivity = .5f;
 
     private float playerRotation = 300f;
     private float playerLean = 0f;
+    private float maxPlayerLean = 12f;
 
     private float playerVelocity = 0f;
 
@@ -39,46 +40,36 @@ public class PlayerController : Controller
     public override void UpdateMovement()
     {
         base.UpdateMovement();
-
         float turnAxis = Input.GetAxis("Horizontal");
         float acclAxis = Input.GetAxis("360_Triggers");
         Debug.Log("trigger - " + acclAxis);
 
-        if (turnAxis != 0)
-        {
-            transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity, 0);
-
-            if (playerLean >= -12 && playerLean <= 12)
-            {
-                playerLean -= Mathf.Sign(turnAxis);
-            }
-        }
-        else
-        {
-            if (playerLean > 0)
-            {
-                playerLean -= 1;
-            }
-            else if (playerLean < 0)
-            {
-                playerLean += 1;
+        if (Mathf.Abs(turnAxis) > .1f && Mathf.Abs(acclAxis) > .1f) {
+            playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxPlayerLean, maxPlayerLean);
+        } else {
+            if (playerLean > 0f) {
+                playerLean -= 1f;
+            } else if (playerLean < 0f) {
+                playerLean += 1f;
             }
         }
 
-        if (acclAxis > .1f || acclAxis < -.1f)
-        {
-            playerVelocity = Mathf.Max(maxReverseVel, Mathf.Min(maxForwardVel, playerVelocity + .5f * acclAxis));
-        }
-        else
-        {
+        if (Mathf.Abs(acclAxis) > .1f) {
+            if (turnAxis != 0) {
+                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
+            }
+
+            playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
+        } else {
             playerVelocity *= .9f;
-            if (Mathf.Abs(playerVelocity) <= .000f)
-            {
+            if (Mathf.Abs(playerVelocity) <= .0001f) {
                 playerVelocity = 0f;
             }
         }
 
         transform.Rotate(playerLean, 0, 0);
         transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
+
+        Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
     }
 }
