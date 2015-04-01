@@ -6,20 +6,8 @@ public class playerRacer : MonoBehaviour {
     public float speed = 10f;
 
     private new Rigidbody rigidbody;
-    //private NavMeshAgent agent;
 
-    //private float sensitivity = .5f;
-
-    //private float playerRotation = 300f;
-    //private float playerLean = 0f;
-    //private float maxLean = 12f;
-
-    //private float playerVelocity = 0f;
-
-    //private float maxForwardVel = 30f;
-    //private float maxReverseVel = -4f;
-
-    public Controller controller;
+    //public Controller controller;
 
     // Synchronization values
     private float lastSynchronizationTime = 0f;
@@ -44,52 +32,12 @@ public class playerRacer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (GetComponent<NetworkView>().isMine) {
-            controller.UpdateMovement();
+            //controller.UpdateMovement();
             //InputMovement();
         } else {
             SyncedMovement();
         }
 	}
-
-    public void AddController(Controller newController)
-    {
-        controller = newController;
-    }
-
-    /*
-    void InputMovement() {
-        float turnAxis = Input.GetAxis("Horizontal");
-        float acclAxis = Input.GetAxis("360_Triggers");
-        Debug.Log("trigger - " + acclAxis);
-
-        if (turnAxis != 0) {
-            playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxLean, maxLean);
-        } else {
-            if (playerLean > 0f) {
-                playerLean -= 1f;
-            } else if (playerLean < 0f) {
-                playerLean += 1f;
-            }
-        }
-
-        if (acclAxis > .1f || acclAxis < -.1f) {
-            if (turnAxis != 0) {
-                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
-            }
-
-            playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
-        } else {
-            playerVelocity *= .9f;
-            if (Mathf.Abs(playerVelocity) <= .000f) {
-                playerVelocity = 0f;
-            }
-        }
-
-        transform.Rotate(playerLean, 0, 0);
-        transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
-
-        //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
-    }*/
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;

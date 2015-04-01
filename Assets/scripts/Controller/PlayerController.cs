@@ -26,7 +26,7 @@ public class PlayerController : Controller
 	
 	// Update is called once per frame
 	void Update () {
-	
+        UpdateMovement();
 	}
 
     void OnTriggerEnter(Collider other)
