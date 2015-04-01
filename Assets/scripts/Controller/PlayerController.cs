@@ -1,27 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : Controller
-{
-    public float speed = 10f;
-
-    private new Rigidbody rigidbody;
-    private NavMeshAgent agent;
-
-    private float sensitivity = .5f;
-
-    private float playerRotation = 300f;
-    private float playerLean = 0f;
-    private float maxPlayerLean = 12f;
-
-    private float playerVelocity = 0f;
-
-    private float maxForwardVel = 30f;
-    private float maxReverseVel = -4f;
+public class PlayerController : Controller {
 
 	// Use this for initialization
-	void Start () {
-	
+    void Start() {
+        racer = GetComponent<playerRacer>();
+
+        if (GetComponent<NetworkView>().isMine) {
+            Camera.main.transform.parent = transform;
+
+            Camera.main.transform.localPosition = new Vector3(-3, 1, 0);
+            //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, 0));
+        }
 	}
 	
 	// Update is called once per frame
@@ -42,33 +33,8 @@ public class PlayerController : Controller
         base.UpdateMovement();
         float turnAxis = Input.GetAxis("Horizontal");
         float acclAxis = Input.GetAxis("360_Triggers");
-        Debug.Log("trigger - " + acclAxis);
 
-        if (Mathf.Abs(turnAxis) > .1f && Mathf.Abs(acclAxis) > .1f) {
-            playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxPlayerLean, maxPlayerLean);
-        } else {
-            if (playerLean > 0f) {
-                playerLean -= 1f;
-            } else if (playerLean < 0f) {
-                playerLean += 1f;
-            }
-        }
-
-        if (Mathf.Abs(acclAxis) > .1f) {
-            if (turnAxis != 0) {
-                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
-            }
-
-            playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
-        } else {
-            playerVelocity *= .9f;
-            if (Mathf.Abs(playerVelocity) <= .0001f) {
-                playerVelocity = 0f;
-            }
-        }
-
-        transform.Rotate(playerLean, 0, 0);
-        transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
+        float playerLean = racer.UpdateMovement(turnAxis, acclAxis);
 
         Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
     }

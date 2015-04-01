@@ -13,7 +13,9 @@ public class AIController : Controller
 
 
 	// Use this for initialization
-	void Start () {
+    void Start() {
+        racer = GetComponent<playerRacer>();
+
 	    if (!GetComponent<NavMeshAgent>())
         {
             agent = gameObject.AddComponent<NavMeshAgent>();
@@ -39,6 +41,7 @@ public class AIController : Controller
 
     void OnTriggerEnter(Collider other)
     {
+        /*
         print(targetIndex);
         if (other.gameObject == WayPoints[targetIndex])
         {
@@ -46,6 +49,7 @@ public class AIController : Controller
             agent.SetDestination(WayPoints[targetIndex].transform.position);
             waypointsHit++;
         }
+        */
     }
 
     public override void UpdateMovement()

@@ -21,6 +21,7 @@ public class networkManager : MonoBehaviour {
     private string[] supportedNetworkLevels = new[] { "NetworkTest" };
     private string disconnectedLevel = "MainMenu";
     private int lastLevelPrefix = 0;
+
     private new NetworkView networkView;
 
     private bool loadingLevel;
@@ -180,8 +181,11 @@ public class networkManager : MonoBehaviour {
         }
 
 
-        for (int i = playerList.Count; i < maxNumPlayers; i++) {
-            networkView.RPC("SpawnAI", RPCMode.AllBuffered, i);
+        if (Network.isServer) {
+            // fix multiple spawn
+            for (int i = playerList.Count; i < maxNumPlayers; i++) {
+                networkView.RPC("SpawnAI", RPCMode.AllBuffered, i);
+            }
         }
 
         yield return 1;
@@ -195,7 +199,8 @@ public class networkManager : MonoBehaviour {
         if (netPlayer == Network.player) {
             Debug.Log("spawned player: " + index);
             Transform start = spotList.startPositions[index].transform;
-            Network.Instantiate(playerRacer, start.position, start.rotation, 0);
+            GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
+            racer.AddComponent<PlayerController>();
         }
     }
 
@@ -206,8 +211,8 @@ public class networkManager : MonoBehaviour {
 
         Debug.Log("spawned ai: " + index);
         Transform start = spotList.startPositions[index].transform;
-        // CHANGE TO AI RACER PREFAB
-        Network.Instantiate(playerRacer, start.position, start.rotation, 0);
+        GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
+        racer.AddComponent<AIController>();
     }
 
     void OnGUI() {
