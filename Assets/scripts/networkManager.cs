@@ -166,26 +166,34 @@ public class networkManager : MonoBehaviour {
             yield return new WaitForSeconds(.1f);
         }
 
-        SpawnPlayer();
+        if (Network.isServer) {
+            for (int i = 0; i < Network.connections.Length; i++) {
+                networkView.RPC("SpawnPlayer", Network.connections[i], i);
+            }
+        }
 
         yield return 1;
     }
 
-    private void SpawnPlayer() {
-        float edge = 10f;
+    [RPC]
+    private void SpawnPlayer(int index) {
+        GameObject startSpots = GameObject.Find("Start Spots");
+        startSpots spotList = startSpots.GetComponent<startSpots>();
 
-        Network.Instantiate(playerRacer, new Vector3(Random.Range(-edge, edge), .6f, Random.Range(-edge, edge)), Quaternion.identity, 0);
+        Network.Instantiate(playerRacer, spotList.startPositions[index].transform.position, Quaternion.identity, 0);
     }
 
     void OnGUI() {
-        int arrayindex = -1;
-        for (int i = 0; i < Network.connections.Length; i++) {
-            GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + Network.connections[i]);
+        if (Network.isServer) {
+            int arrayindex = -1;
+            for (int i = 0; i < Network.connections.Length; i++) {
+                GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + Network.connections[i]);
 
-            if (Network.connections[i] == Network.player)
-                arrayindex = i;
+                if (Network.connections[i] == Network.player)
+                    arrayindex = i;
+            }
+
+            GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + Network.connections.Length + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
         }
-
-        GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + Network.connections.Length + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
     }
 }
