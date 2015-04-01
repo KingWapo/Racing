@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(NetworkView))]
 public class networkManager : MonoBehaviour {
@@ -27,6 +28,8 @@ public class networkManager : MonoBehaviour {
 
     private bool loadingLevel;
 
+    private List<NetworkPlayer> playerList;
+
     void Awake() {
     }
 	// Use this for initialization
@@ -36,6 +39,8 @@ public class networkManager : MonoBehaviour {
         Debug.Log(gameObject.name);
         networkView = GetComponent<NetworkView>();
         networkView.group = 1;
+
+        playerList = new List<NetworkPlayer>();
 	}
 
     // Server initialization
@@ -46,6 +51,8 @@ public class networkManager : MonoBehaviour {
         Network.InitializeServer(numPlayers, 25000, !Network.HavePublicAddress());
 
         MasterServer.RegisterHost(typeName, gameName);
+
+        playerList.Add(Network.player);
     }
 
     public void StartPrivateServer() {
@@ -80,10 +87,12 @@ public class networkManager : MonoBehaviour {
     }
 
     void OnPlayerConnected(NetworkPlayer player) {
+        playerList.Add(player);
     }
 
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
+        playerList.Remove(player);
     }
 
     // Disconnect from server
@@ -166,21 +175,21 @@ public class networkManager : MonoBehaviour {
             yield return new WaitForSeconds(.1f);
         }
 
-        if (Network.isServer) {
-            for (int i = 0; i < Network.connections.Length; i++) {
-                networkView.RPC("SpawnPlayer", Network.connections[i], i);
-            }
+        for (int i = 0; i < playerList.Count; i++) {
+            networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
         }
 
         yield return 1;
     }
 
     [RPC]
-    private void SpawnPlayer(int index) {
+    private void SpawnPlayer(NetworkPlayer netPlayer, int index) {
         GameObject startSpots = GameObject.Find("Start Spots");
         startSpots spotList = startSpots.GetComponent<startSpots>();
 
-        Network.Instantiate(playerRacer, spotList.startPositions[index].transform.position, Quaternion.identity, 0);
+        if (netPlayer == Network.player) {
+            Network.Instantiate(playerRacer, spotList.startPositions[index].transform.position, Quaternion.identity, 0);
+        }
     }
 
     void OnGUI() {
