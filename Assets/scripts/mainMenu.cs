@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class mainMenu : MonoBehaviour {
@@ -9,6 +10,7 @@ public class mainMenu : MonoBehaviour {
         MainMenu,
         ServerList,
         HostGame,
+        JoinGame,
         GameLobby,
         None
     };
@@ -22,9 +24,14 @@ public class mainMenu : MonoBehaviour {
     private int btnPadding = 10;
 
     public networkManager networkManager;
+    private HostData connectingToHost;
+    private string serverPass = "";
+
+    private List<string> queuedLevels;
 
     void Start() {
         currentMenu = MenuIndex.MainMenu;
+        queuedLevels = new List<string>();
     }
 
     void OnGUI() {
@@ -85,12 +92,23 @@ public class mainMenu : MonoBehaviour {
                 HostData[] hostList = networkManager.GetHostList();
 
                 if (hostList != null) {
+                    TextAnchor buttonAnchor = GUI.skin.button.alignment;
+                    GUI.skin.button.alignment = TextAnchor.MiddleLeft;
                     for (int i = 0; i < hostList.Length; i++) {
-                        if (GUI.Button(new Rect(btnX, btnY + (btnH + btnPadding) * (i + 1), btnW * 3, btnH), hostList[i].gameName)) {
-                            networkManager.JoinServer(hostList[i]);
-                            ShowMenu(MenuIndex.GameLobby);
+                        string serverInfo = hostList[i].gameName + "\t" + hostList[i].connectedPlayers + "/" + hostList[i].playerLimit;
+                        if (hostList[i].connectedPlayers < hostList[i].playerLimit) {
+                            if (GUI.Button(new Rect(btnX, btnY + (btnH + btnPadding) * (i + 1), btnW * 3, btnH), serverInfo)) {
+                                if (hostList[i].passwordProtected) {
+                                    connectingToHost = hostList[i];
+                                    ShowMenu(MenuIndex.JoinGame);
+                                } else {
+                                    networkManager.JoinServer(hostList[i]);
+                                    ShowMenu(MenuIndex.GameLobby);
+                                }
+                            }
                         }
                     }
+                    GUI.skin.button.alignment = buttonAnchor;
                 }
 
                 break;
@@ -98,11 +116,21 @@ public class mainMenu : MonoBehaviour {
                 btnX = 200;
                 btnY = 200;
 
-                networkManager.SetGameName(GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), networkManager.GetGameName(), 25));
-                networkManager.SetGamePass(GUI.TextField(new Rect(btnX, btnY + (btnH + btnPadding) * 2, btnW, btnH), networkManager.GetGamePass(), 25));
+                TextAnchor labelAnchor = GUI.skin.label.alignment;
+                GUI.skin.label.alignment = TextAnchor.MiddleRight;
+                GUI.Label(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), "Server Name: ");
+                GUI.Label(new Rect(btnX, btnY + (btnH + btnPadding) * 2, btnW, btnH), "Server Pass: ");
+                GUI.skin.label.alignment = labelAnchor;
+
+                networkManager.SetGameName(GUI.TextField(new Rect(btnX + btnW + btnPadding, btnY + (btnH + btnPadding) * 1, btnW, btnH), networkManager.GetGameName(), 25));
+                networkManager.SetGamePass(GUI.TextField(new Rect(btnX + btnW + btnPadding, btnY + (btnH + btnPadding) * 2, btnW, btnH), networkManager.GetGamePass(), 25));
 
                 if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
                     ShowMenu(MenuIndex.MainMenu);
+                }
+
+                if (GUI.Button(new Rect(30, 30 + btnH + btnPadding, btnW, btnH), "Server List")) {
+                    ShowMenu(MenuIndex.ServerList);
                 }
 
                 if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
@@ -110,6 +138,31 @@ public class mainMenu : MonoBehaviour {
                         networkManager.StartServer();
                         ShowMenu(MenuIndex.GameLobby);
                     }
+                }
+
+                break;
+            case MenuIndex.JoinGame:
+                btnX = 200;
+                btnY = 200;
+
+                TextAnchor label2Anchor = GUI.skin.label.alignment;
+                GUI.skin.label.alignment = TextAnchor.MiddleRight;
+                GUI.Label(new Rect(btnX, btnY + (btnH + btnPadding) * 1, btnW, btnH), "Server Pass: ");
+                GUI.skin.label.alignment = label2Anchor;
+
+                serverPass = GUI.TextField(new Rect(btnX + btnW + btnPadding, btnY + (btnH + btnPadding) * 1, btnW, btnH), serverPass, 25);
+
+                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Main Menu")) {
+                    ShowMenu(MenuIndex.MainMenu);
+                }
+
+                if (GUI.Button(new Rect(30, 30 + btnH + btnPadding, btnW, btnH), "Server List")) {
+                    ShowMenu(MenuIndex.ServerList);
+                }
+
+                if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Join Server")) {
+                    networkManager.JoinServer(connectingToHost, serverPass);
+                    ShowMenu(MenuIndex.GameLobby);
                 }
 
                 break;

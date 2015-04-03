@@ -38,7 +38,7 @@ public class networkManager : MonoBehaviour {
         networkView = GetComponent<NetworkView>();
         networkView.group = 1;
 
-        maxNumPlayers = 8;
+        maxNumPlayers = 2; // number of players other than the server
         numPlayers = maxNumPlayers;
 
         playerList = new List<NetworkPlayer>();
@@ -80,6 +80,10 @@ public class networkManager : MonoBehaviour {
     // Join existing server
     public void JoinServer(HostData hostData) {
         Network.Connect(hostData);
+    }
+
+    public void JoinServer(HostData hostData, string pass) {
+        Network.Connect(hostData, pass);
     }
 
     void OnConnectedToServer() {
@@ -168,6 +172,7 @@ public class networkManager : MonoBehaviour {
 
     public void SpawnClientRacers() {
         networkView.RPC("SpawnRacer", RPCMode.AllBuffered);
+        SpawnAIRacer();
     }
 
     [RPC]
@@ -180,12 +185,16 @@ public class networkManager : MonoBehaviour {
             networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
         }
 
+        yield return 1;
+    }
 
-        if (Network.isServer) {
-            // fix multiple spawn
-            for (int i = playerList.Count; i < maxNumPlayers; i++) {
-                networkView.RPC("SpawnAI", RPCMode.AllBuffered, i);
-            }
+    public IEnumerator SpawnAIRacer() {
+        while (loadingLevel) {
+            yield return new WaitForSeconds(.1f);
+        }
+
+        for (int i = playerList.Count; i < maxNumPlayers; i++) {
+            SpawnAI(i);
         }
 
         yield return 1;
@@ -204,7 +213,6 @@ public class networkManager : MonoBehaviour {
         }
     }
 
-    [RPC]
     private void SpawnAI(int index) {
         GameObject startSpots = GameObject.Find("Start Spots");
         startSpots spotList = startSpots.GetComponent<startSpots>();
