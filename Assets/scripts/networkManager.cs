@@ -19,6 +19,8 @@ public class networkManager : MonoBehaviour {
 
     // Level loading information
     private string[] supportedNetworkLevels = new[] { "NetworkTest" };
+    public List<string> queuedLevels;
+    public int maxQueue = 5;
     private string disconnectedLevel = "MainMenu";
     private int lastLevelPrefix = 0;
 
@@ -41,6 +43,7 @@ public class networkManager : MonoBehaviour {
         maxNumPlayers = 7; // number of players other than the server
         numPlayers = maxNumPlayers;
 
+        queuedLevels = new List<string>();
         playerList = new List<NetworkPlayer>();
 	}
 
@@ -98,6 +101,15 @@ public class networkManager : MonoBehaviour {
         playerList.Add(player);
     }
 
+    // Disconnect from server
+    public void LeaveServer() {
+        Network.Disconnect();
+    }
+
+    void OnDisconnectedFromServer() {
+        Application.LoadLevel(disconnectedLevel);
+    }
+
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
         playerList.Remove(player);
@@ -108,11 +120,6 @@ public class networkManager : MonoBehaviour {
 
         menu.connectionError = "Failed to connect to server: " + error;
         menu.ShowMenu(MenuIndex.ConnectFail);
-    }
-
-    // Disconnect from server
-    void OnDisconnectedFromServer() {
-        Application.LoadLevel(disconnectedLevel);
     }
 
     public HostData[] GetHostList() {
