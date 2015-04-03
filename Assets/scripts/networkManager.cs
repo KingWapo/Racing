@@ -38,7 +38,7 @@ public class networkManager : MonoBehaviour {
         networkView = GetComponent<NetworkView>();
         networkView.group = 1;
 
-        maxNumPlayers = 2; // number of players other than the server
+        maxNumPlayers = 7; // number of players other than the server
         numPlayers = maxNumPlayers;
 
         playerList = new List<NetworkPlayer>();
@@ -172,7 +172,6 @@ public class networkManager : MonoBehaviour {
 
     public void SpawnClientRacers() {
         networkView.RPC("SpawnRacer", RPCMode.AllBuffered);
-        SpawnAIRacer();
     }
 
     [RPC]
@@ -185,16 +184,11 @@ public class networkManager : MonoBehaviour {
             networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
         }
 
-        yield return 1;
-    }
-
-    public IEnumerator SpawnAIRacer() {
-        while (loadingLevel) {
-            yield return new WaitForSeconds(.1f);
-        }
-
-        for (int i = playerList.Count; i < maxNumPlayers; i++) {
-            SpawnAI(i);
+        // only let server call function
+        if (Network.isServer) {
+            for (int i = playerList.Count; i <= maxNumPlayers; i++) {
+                networkView.RPC("SpawnAI", RPCMode.AllBuffered, i);
+            }
         }
 
         yield return 1;
@@ -213,14 +207,19 @@ public class networkManager : MonoBehaviour {
         }
     }
 
+    [RPC]
     private void SpawnAI(int index) {
-        GameObject startSpots = GameObject.Find("Start Spots");
-        startSpots spotList = startSpots.GetComponent<startSpots>();
+        // only let server execute function
+        // need both isServer checks to prevent dupe spawns
+        if (Network.isServer) {
+            GameObject startSpots = GameObject.Find("Start Spots");
+            startSpots spotList = startSpots.GetComponent<startSpots>();
 
-        Debug.Log("spawned ai: " + index);
-        Transform start = spotList.startPositions[index].transform;
-        GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
-        racer.AddComponent<AIController>();
+            Debug.Log("spawned ai: " + index);
+            Transform start = spotList.startPositions[index].transform;
+            GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
+            racer.AddComponent<AIController>();
+        }
     }
 
     void OnGUI() {
