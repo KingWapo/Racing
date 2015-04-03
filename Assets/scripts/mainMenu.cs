@@ -3,17 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class mainMenu : MonoBehaviour {
+// Menu screens
+public enum MenuIndex {
+    MainMenu,
+    ServerList,
+    HostGame,
+    JoinGame,
+    Connecting,
+    ConnectFail,
+    GameLobby,
+    None
+};
 
-    // Menu screens
-    public enum MenuIndex {
-        MainMenu,
-        ServerList,
-        HostGame,
-        JoinGame,
-        GameLobby,
-        None
-    };
+public class mainMenu : MonoBehaviour {
 
     public MenuIndex currentMenu;
 
@@ -21,11 +23,14 @@ public class mainMenu : MonoBehaviour {
     private int btnX, btnY;
     private int btnW = 160;
     private int btnH = 30;
+    private int btn2W = 400;
+    private int btn2H = 300;
     private int btnPadding = 10;
 
     public networkManager networkManager;
     private HostData connectingToHost;
     private string serverPass = "";
+    public string connectionError;
 
     private List<string> queuedLevels;
 
@@ -162,9 +167,19 @@ public class mainMenu : MonoBehaviour {
 
                 if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Join Server")) {
                     networkManager.JoinServer(connectingToHost, serverPass);
-                    ShowMenu(MenuIndex.GameLobby);
+                    ShowMenu(MenuIndex.Connecting);
                 }
 
+                break;
+            case MenuIndex.Connecting:
+                GUI.Label(new Rect((Screen.width - btn2W) / 2, (Screen.height - btn2H) / 2, btn2W, btn2H), "CONNECTING");
+                break;
+            case MenuIndex.ConnectFail:
+                GUI.Label(new Rect((Screen.width - btn2W) / 2, (Screen.height - btn2H) / 2, btn2W, btn2H), connectionError);
+
+                if (GUI.Button(new Rect(30, 30, btnW, btnH), "Server List")) {
+                    ShowMenu(MenuIndex.ServerList);
+                }
                 break;
             case MenuIndex.GameLobby:
                 if (Network.peerType != NetworkPeerType.Disconnected) {
@@ -194,7 +209,7 @@ public class mainMenu : MonoBehaviour {
     }
 
     // Displayed menu
-    void ShowMenu(MenuIndex index) {
+    public void ShowMenu(MenuIndex index) {
         currentMenu = index;
 
         if (index == MenuIndex.ServerList) {

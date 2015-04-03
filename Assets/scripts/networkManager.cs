@@ -88,7 +88,10 @@ public class networkManager : MonoBehaviour {
 
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
-        //SpawnPlayer();
+
+        mainMenu menu = FindObjectOfType<mainMenu>();
+
+        menu.ShowMenu(MenuIndex.GameLobby);
     }
 
     void OnPlayerConnected(NetworkPlayer player) {
@@ -98,6 +101,13 @@ public class networkManager : MonoBehaviour {
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
         playerList.Remove(player);
+    }
+
+    void OnFailedToConnect(NetworkConnectionError error) {
+        mainMenu menu = FindObjectOfType<mainMenu>();
+
+        menu.connectionError = "Failed to connect to server: " + error;
+        menu.ShowMenu(MenuIndex.ConnectFail);
     }
 
     // Disconnect from server
