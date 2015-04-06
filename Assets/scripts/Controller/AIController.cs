@@ -4,12 +4,11 @@ using System.Collections.Generic;
 
 public class AIController : Controller
 {
-    public List<GameObject> WayPoints;
-
     public float Sensitivity;
 
     private int targetIndex;
     private NavMeshAgent agent;
+    private List<GameObject> waypoints;
 
 
 	// Use this for initialization
@@ -32,6 +31,15 @@ public class AIController : Controller
 
         targetIndex = 0;
         waypointsHit = 0;
+
+        waypoints = new List<GameObject>();
+        GameObject WaypointList = GameObject.FindGameObjectWithTag("Waypoint List");
+        for (int i = 0; i < WaypointList.transform.childCount; i++)
+        {
+            waypoints.Add(WaypointList.transform.GetChild(i).gameObject);
+        }
+
+        agent.SetDestination(waypoints[targetIndex].transform.position);
 	}
 	
 	// Update is called once per frame
@@ -41,15 +49,15 @@ public class AIController : Controller
 
     void OnTriggerEnter(Collider other)
     {
-        /*
+        
         print(targetIndex);
-        if (other.gameObject == WayPoints[targetIndex])
+        if (other.gameObject == waypoints[targetIndex])
         {
-            targetIndex = (targetIndex + 1) % WayPoints.Count;
-            agent.SetDestination(WayPoints[targetIndex].transform.position);
+            targetIndex = (targetIndex + 1) % waypoints.Count;
+            agent.SetDestination(waypoints[targetIndex].transform.position);
             waypointsHit++;
         }
-        */
+        
     }
 
     public override void UpdateMovement()

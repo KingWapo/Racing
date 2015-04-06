@@ -10,7 +10,7 @@ public class PlayerController : Controller {
         if (GetComponent<NetworkView>().isMine) {
             Camera.main.transform.parent = transform;
 
-            Camera.main.transform.localPosition = new Vector3(-3, 1, 0);
+            Camera.main.transform.localPosition = new Vector3(0, 1, -3);
             //Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, 0));
         }
 	}
@@ -36,6 +36,8 @@ public class PlayerController : Controller {
 
         float playerLean = racer.UpdateMovement(turnAxis, acclAxis);
 
-        Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 90, -playerLean));
+        print("Updating movement: " + turnAxis + " accel: " + acclAxis);
+
+        Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 0, -playerLean));
     }
 }

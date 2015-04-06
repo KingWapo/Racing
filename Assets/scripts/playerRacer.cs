@@ -68,8 +68,8 @@ public class playerRacer : MonoBehaviour {
             }
         }
 
-        transform.Rotate(playerLean, 0, 0);
-        transform.Translate(Time.deltaTime * playerVelocity, 0, 0);
+        transform.Rotate(0, 0, playerLean);
+        transform.Translate(0,0, Time.deltaTime * playerVelocity);
 
         return playerLean;
     }
