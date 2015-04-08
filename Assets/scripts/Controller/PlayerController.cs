@@ -34,10 +34,10 @@ public class PlayerController : Controller {
         float turnAxis = Input.GetAxis("Horizontal");
         float acclAxis = Input.GetAxis("360_Triggers");
 
-        float playerLean = racer.UpdateMovement(turnAxis, acclAxis);
+        racer.UpdateMovement(turnAxis, acclAxis);
 
         print("Updating movement: " + turnAxis + " accel: " + acclAxis);
 
-        Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 0, -playerLean));
+        Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 0, -racer.GetLean()));
     }
 }

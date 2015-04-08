@@ -1,25 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class playerRacer : MonoBehaviour {
+public class playerShooter : MonoBehaviour {
 
-    public float speed = 10f;
+    public float trackSpeed = 10f;
 
     private float sensitivity = .5f;
 
-    private float playerRotation = 300f;
-    private float playerLean = 0f;
-    private float maxPlayerLean = 12f;
-
-    private float playerVelocity = 0f;
-
-    private float maxForwardVel = 30f;
-    private float maxReverseVel = -4f;
-
     private new Rigidbody rigidbody;
-    private NavMeshAgent agent;
 
-    //public Controller controller;
+    private Transform gunForward;
+
+    private Vector3 trackCenter;
+    private float trackRadius;
+    private float rotationAngle;
+    private float verticalOffset;
 
     // Synchronization values
     private float lastSynchronizationTime = 0f;
@@ -32,53 +27,26 @@ public class playerRacer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
+        gunForward = this.transform.FindChild("Gun");
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (GetComponent<NetworkView>().isMine) {
-            //controller.UpdateMovement();
-            //InputMovement();
+            // player update
         } else {
             SyncedMovement();
         }
 	}
 
-    public void UpdateMovement(float turnAxis, float acclAxis) {
-        if (Mathf.Abs(turnAxis) > .1f && Mathf.Abs(acclAxis) > .1f) {
-            playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxPlayerLean, maxPlayerLean);
-        } else {
-            if (playerLean > 0f) {
-                playerLean -= 1f;
-            } else if (playerLean < 0f) {
-                playerLean += 1f;
-            }
-        }
+    public void UpdateMovement(float lAxisX, float lAxisY, float rAxisX, float rAxisY) {
 
-        if (Mathf.Abs(acclAxis) > .1f) {
-            if (turnAxis != 0) {
-                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
-            }
-
-            playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
-        } else {
-            playerVelocity *= .9f;
-            if (Mathf.Abs(playerVelocity) <= .0001f) {
-                playerVelocity = 0f;
-            }
-        }
-
-        transform.Rotate(0, 0, playerLean);
-        transform.Translate(0,0, Time.deltaTime * playerVelocity);
     }
 
-    public float GetLean() {
-        return playerLean;
-    }
-
-    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
+    void OnSerializedNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
+        Quaternion syncGunForward = Quaternion.identity;
         Quaternion syncRotation = Quaternion.identity;
 
         if (stream.isWriting) {
@@ -90,10 +58,14 @@ public class playerRacer : MonoBehaviour {
 
             syncRotation = transform.rotation;
             stream.Serialize(ref syncRotation);
+
+            syncGunForward = gunForward.rotation;
+            stream.Serialize(ref syncGunForward);
         } else {
             stream.Serialize(ref syncPosition);
             stream.Serialize(ref syncVelocity);
             stream.Serialize(ref syncRotation);
+            stream.Serialize(ref syncGunForward);
 
             syncTime = 0f;
             syncDelay = Time.time - lastSynchronizationTime;
@@ -103,6 +75,8 @@ public class playerRacer : MonoBehaviour {
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
 
             syncStartRotation = syncRotation;
+
+            gunForward.rotation = syncGunForward;
         }
     }
 
@@ -110,5 +84,14 @@ public class playerRacer : MonoBehaviour {
         syncTime += Time.deltaTime;
         rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
         transform.rotation = syncStartRotation;
+    }
+
+    public void InitializeShooterTrack(Vector3 center, float radius, float angle, float offset) {
+        trackCenter = center;
+        trackRadius = radius;
+        rotationAngle = angle;
+        verticalOffset = offset;
+
+        trackCenter.y += verticalOffset;
     }
 }

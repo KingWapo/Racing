@@ -16,6 +16,7 @@ public class networkManager : MonoBehaviour {
 
     // Player prefab
     public GameObject playerRacer;
+    public GameObject playerShooter;
 
     // Level loading information
     private string[] supportedNetworkLevels = new[] { "NetworkTest" };
@@ -236,6 +237,49 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
+        }
+    }
+
+    [RPC]
+    public IEnumerator SpawnShooter() {
+        while (loadingLevel) {
+            yield return new WaitForSeconds(.1f);
+        }
+
+        for (int i = 0; i < playerList.Count; i++) {
+            networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[i], i);
+        }
+
+        // only let server call function
+        if (Network.isServer) {
+            for (int i = playerList.Count; i <= maxNumPlayers; i++) {
+                networkView.RPC("SpawnAIShooter", RPCMode.AllBuffered, i);
+            }
+        }
+
+        yield return 1;
+    }
+
+    [RPC]
+    private void SpawnPlayerShooter(NetworkPlayer netPlayer, int index) {
+        GameObject startSpots = GameObject.Find("Start Spots");
+        startSpots spotList = startSpots.GetComponent<startSpots>();
+
+        if (netPlayer == Network.player) {
+            Debug.Log("spawned player shooter: " + index);
+            GameObject shooter = (GameObject)Network.Instantiate(playerShooter, Vector3.zero, Quaternion.identity, 0);
+            //racer.AddComponent<PlayerController>();
+        }
+    }
+
+    [RPC]
+    private void SpawnAIShooter(int index) {
+        // only let server execute function
+        // need both isServer checks to prevent dupe spawns
+        if (Network.isServer) {
+            Debug.Log("spawned ai shooter: " + index);
+            GameObject shooter = (GameObject)Network.Instantiate(playerShooter, Vector3.zero, Quaternion.identity, 0);
+            //racer.AddComponent<AIController>();
         }
     }
 
