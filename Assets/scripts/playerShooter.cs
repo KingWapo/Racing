@@ -39,8 +39,15 @@ public class playerShooter : MonoBehaviour {
         }
 	}
 
-    public void UpdateMovement(float lAxisX, float lAxisY, float rAxisX, float rAxisY) {
+    public void UpdateMovement(float lAxisX, float rAxisX, float rAxisY) {
+        if (Mathf.Abs(lAxisX) > .1f) {
+            float radiusMod = Mathf.Sign(lAxisX) * Mathf.Exp(2 * Mathf.Pow(lAxisX, 2)) - 1;
 
+            rotationAngle = (rotationAngle + radiusMod) % 360f;
+            rotationAngle = rotationAngle < 0f ? rotationAngle + 360f : rotationAngle;
+
+            transform.rotation.Set(0f, rotationAngle, 0f, 0f);
+        }
     }
 
     void OnSerializedNetworkView(BitStream stream, NetworkMessageInfo info) {
