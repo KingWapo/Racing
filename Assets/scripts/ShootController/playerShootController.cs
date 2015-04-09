@@ -20,6 +20,6 @@ public class playerShootController : shootController {
 	}
 
     public override void UpdateMovement() {
-
+        shooter.UpdateMovement(Input.GetAxis("Horizontal"), 0, 0);
     }
 }

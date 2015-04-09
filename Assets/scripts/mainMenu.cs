@@ -266,7 +266,7 @@ public class mainMenu : MonoBehaviour {
                         Network.RemoveRPCsInGroup(1);
                         networkManager.LoadNewLevel(networkManager.queuedLevels[0]);
                         networkManager.queuedLevels.RemoveAt(0);
-                        networkManager.SpawnClientRacers();
+                        networkManager.SpawnClients();
                         ShowMenu(MenuIndex.None);
                     }
                 }
