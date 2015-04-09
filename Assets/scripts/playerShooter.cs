@@ -46,7 +46,6 @@ public class playerShooter : MonoBehaviour {
             rotationAngle = (rotationAngle + radiusMod) % 360f;
             rotationAngle = rotationAngle < 0f ? rotationAngle + 360f : rotationAngle;
 
-            Debug.Log("rotation angle: " + rotationAngle);
             transform.Rotate(Vector3.up, rotationAngle - oldRotation);
         }
         

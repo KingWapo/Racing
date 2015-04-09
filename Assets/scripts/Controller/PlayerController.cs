@@ -31,7 +31,7 @@ public class PlayerController : Controller {
     public override void UpdateMovement()
     {
         base.UpdateMovement();
-        float turnAxis = Input.GetAxis("Horizontal");
+        float turnAxis = Input.GetAxis("360_LeftThumbstick");
         float acclAxis = Input.GetAxis("360_Triggers");
 
         racer.UpdateMovement(turnAxis, acclAxis);

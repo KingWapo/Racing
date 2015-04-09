@@ -21,6 +21,11 @@ public class playerShootController : shootController {
 	}
 
     public override void UpdateMovement() {
-        shooter.UpdateMovement(Input.GetAxis("Horizontal"), 0, 0);
+        float lAxisX = Input.GetAxis("360_LeftThumbstick");
+        float rAxisX = Input.GetAxis("360_RightThumbstickX");
+        float rAxisY = Input.GetAxis("360_RightThumbstickY");
+
+        Debug.Log("AXIS: " + lAxisX + ", " + rAxisX + ", " + rAxisY);
+        shooter.UpdateMovement(lAxisX, rAxisX, rAxisY);
     }
 }
