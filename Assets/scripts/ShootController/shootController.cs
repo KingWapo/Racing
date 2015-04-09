@@ -15,5 +15,7 @@ public class shootController : MonoBehaviour {
 	
 	}
 
-    virtual public void UpdateMovement();
+    virtual public void UpdateMovement() {
+
+    }
 }

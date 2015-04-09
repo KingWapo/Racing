@@ -27,7 +27,8 @@ public class playerShooter : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
-        gunForward = this.transform.FindChild("Gun");
+        transform.Find("RailGun").Translate(Mathf.Cos(rotationAngle) * trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
+        gunForward = transform.FindChild("Gun");
 	}
 	
 	// Update is called once per frame

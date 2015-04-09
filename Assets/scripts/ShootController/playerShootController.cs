@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class playerShootController : MonoBehaviour {
+public class playerShootController : shootController {
 
 	// Use this for initialization
 	void Start () {
@@ -10,7 +10,7 @@ public class playerShootController : MonoBehaviour {
         if (GetComponent<NetworkView>().isMine) {
             Camera.main.transform.parent = transform;
 
-            Camera.main.transform.localposition = new Vector3(0, 1, -3);
+            Camera.main.transform.localPosition = new Vector3(0, 1, -3);
         }
 	}
 	
