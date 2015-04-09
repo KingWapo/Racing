@@ -26,24 +26,25 @@ public class RacingManager : MonoBehaviour {
     {
         if (racers.Count > 0)
         {
-            places = "Racer 1 " + racers[0].GetComponent<BrandonIsAFuck>().Place + " with " + racers[0].GetComponent<BrandonIsAFuck>().Progress() + "\n";
+            places = "Racer 1 " + racers[0].GetComponent<RacerInformation>().Place + " with " + racers[0].GetComponent<RacerInformation>().Progress() + "\n";
             for (int i = 1; i < racers.Count; i++)
             {
-                if (racers[i].GetComponent<BrandonIsAFuck>().Progress() > racers[i - 1].GetComponent<BrandonIsAFuck>().Progress())
+                if (racers[i].GetComponent<RacerInformation>().Progress() > racers[i - 1].GetComponent<RacerInformation>().Progress())
                 {
                     GameObject temp = racers[i - 1];
                     racers[i - 1] = racers[i];
                     racers[i] = temp;
-                    racers[i - 1].GetComponent<BrandonIsAFuck>().Place = i;
-                    racers[i].GetComponent<BrandonIsAFuck>().Place = i + 1;
+                    racers[i - 1].GetComponent<RacerInformation>().Place = i;
+                    racers[i].GetComponent<RacerInformation>().Place = i + 1;
                 }
-                places += "Racer " + (i + 1) + " " + racers[i].GetComponent<BrandonIsAFuck>().Place + " with " + racers[i].GetComponent<BrandonIsAFuck>().Progress() + "\n";
+                places += "Racer " + (i + 1) + " " + racers[i].GetComponent<RacerInformation>().Place + " with " + racers[i].GetComponent<RacerInformation>().Progress() + "\n";
             }
             PlacementText.text = places;
-        }
-        if (racers[0].GetComponent<BrandonIsAFuck>().Finished)
-        {
-            GetComponent<networkManager>().NextLevel();
+
+            if (racers[0].GetComponent<RacerInformation>().Finished)
+            {
+                GetComponent<networkManager>().NextLevel();
+            }
         }
     }
 
@@ -54,7 +55,7 @@ public class RacingManager : MonoBehaviour {
             print("In here");
             PlacementText = GameObject.FindGameObjectWithTag("PlacementText").GetComponent<Text>();
         }
-        racer.GetComponent<BrandonIsAFuck>().Place = (startPosition + 1);
+        racer.GetComponent<RacerInformation>().Place = (startPosition + 1);
         racers.Add(racer);
     }
 

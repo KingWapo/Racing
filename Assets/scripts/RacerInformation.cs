@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class BrandonIsAFuck : MonoBehaviour {
+public class RacerInformation : MonoBehaviour {
 
     // Determining placement
     public bool Finished;
