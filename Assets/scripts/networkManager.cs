@@ -161,7 +161,7 @@ public class networkManager : MonoBehaviour {
             Network.RemoveRPCsInGroup(1);
             LoadNewLevel(queuedLevels[0]);
             queuedLevels.RemoveAt(0);
-            SpawnClientRacers();
+            SpawnClients();
             return true;
         }
         else
@@ -262,7 +262,6 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
-
             racingManager.AddRacer(racer, index);
         }
     }
