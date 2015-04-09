@@ -16,6 +16,8 @@ public class playerRacer : MonoBehaviour {
     private float maxForwardVel = 30f;
     private float maxReverseVel = -4f;
 
+    private float acceleration = 0f;
+
     private new Rigidbody rigidbody;
     private NavMeshAgent agent;
 
@@ -37,9 +39,14 @@ public class playerRacer : MonoBehaviour {
         if (!GetComponent<NetworkView>().isMine) {
             SyncedMovement();
         }
+        if (Mathf.Abs(acceleration) <= 0.1f)
+        {
+            rigidbody.velocity = Vector3.zero;
+        }
 	}
 
     public void UpdateMovement(float turnAxis, float acclAxis) {
+        acceleration = acclAxis;
         if (Mathf.Abs(turnAxis) > .1f && Mathf.Abs(acclAxis) > .1f) {
             playerLean = Mathf.Clamp(playerLean - Mathf.Sign(turnAxis), -maxPlayerLean, maxPlayerLean);
         } else {
