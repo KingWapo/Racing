@@ -39,7 +39,7 @@ public class RacingManager : MonoBehaviour {
                 }
                 places += "Racer " + (i + 1) + " " + racers[i].GetComponent<RacerInformation>().Place + " with " + racers[i].GetComponent<RacerInformation>().Progress() + "\n";
             }
-            PlacementText.text = places;
+            //PlacementText.text = places;
 
             if (racers[0].GetComponent<RacerInformation>().Finished)
             {

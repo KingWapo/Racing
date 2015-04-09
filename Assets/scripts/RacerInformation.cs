@@ -25,7 +25,7 @@ public class RacerInformation : MonoBehaviour {
 	void Update () {
         if (GetComponent<NetworkView>().isMine)
         {
-            placementText.text = "Current Place: " + Place;
+            //placementText.text = "Current Place: " + Place;
         }
 
         Finished = waypointsHit >= 54;
