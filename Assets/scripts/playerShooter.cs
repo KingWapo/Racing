@@ -24,8 +24,9 @@ public class playerShooter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        transform.Find("RailGun").Translate(Mathf.Cos(rotationAngle) * -trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
-        gunForward = transform.FindChild("Gun");
+        Transform railGun = transform.Find("RailGun");
+        railGun.Translate(Mathf.Cos(rotationAngle) * -trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
+        gunForward = railGun.FindChild("Gun");
 	}
 	
 	// Update is called once per frame
@@ -48,25 +49,43 @@ public class playerShooter : MonoBehaviour {
 
             transform.Rotate(Vector3.up, rotationAngle - oldRotation);
         }
-        
-        float theta_scale = 0.1f;             //Set lower to add more points
-        int size = (int)((2.0 * Mathf.PI) / theta_scale); //Total number of points in circle.
 
-        /*LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
-        lineRenderer.SetColors(Color.black, Color.red);
-        lineRenderer.SetWidth(0.2F, 0.2F);
-        lineRenderer.SetVertexCount(size);
+        float rotBound = 45f;
 
-        int i = 0;
-        for (float theta = 0; theta < 2 * Mathf.PI; theta += 0.1f) {
-            float x = trackRadius * Mathf.Cos(theta);
-            float y = trackRadius * Mathf.Sin(theta);
+        if (Mathf.Abs(rAxisX) > .1f) {
+            Vector3 rotation = gunForward.localRotation.eulerAngles;
+            rotation.y += rAxisX;
+            if (rotation.y > rotBound && rotation.y < 180) {
+                rotation.y = rotBound;
+            }
 
-            Vector3 pos = new Vector3(x, y, 0);
-            lineRenderer.SetPosition(i, pos);
-            i += 1;
-        }*/
+            if (rotation.y < 360f - rotBound && rotation.y > 180) {
+                rotation.y = 360f - rotBound;
+            }
+
+            gunForward.localEulerAngles = rotation;
+        }
+
+        if (Mathf.Abs(rAxisY) > .1f) {
+            Vector3 rotation = gunForward.localRotation.eulerAngles;
+            rotation.z -= rAxisY;
+
+            rotation.z = Mathf.Clamp(rotation.z, 280f, 359f);
+            gunForward.localEulerAngles = rotation;
+        }
+    }
+
+    public void Shoot(float rTrigger) {
+        if (rTrigger >= .9f) {
+            RaycastHit hit;
+
+            if (Physics.Raycast(gunForward.position, gunForward.right, out hit)) {
+                if (hit.collider.gameObject.name.Equals("Racer(Clone)")) {
+                    Debug.Log("HIT A CAR!!!");
+                    hit.collider.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     void OnSerializedNetworkView(BitStream stream, NetworkMessageInfo info) {
