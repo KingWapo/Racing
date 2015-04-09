@@ -10,7 +10,7 @@ public class playerShooter : MonoBehaviour {
     private Transform gunForward;
 
     private Vector3 trackCenter;
-    private float trackRadius;
+    private float trackRadius = 50f;
     private float rotationAngle;
     private float verticalOffset;
 
@@ -24,7 +24,7 @@ public class playerShooter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        transform.Find("RailGun").Translate(Mathf.Cos(rotationAngle) * trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
+        transform.Find("RailGun").Translate(Mathf.Cos(rotationAngle) * -trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
         gunForward = transform.FindChild("Gun");
 	}
 	
@@ -39,12 +39,15 @@ public class playerShooter : MonoBehaviour {
 
     public void UpdateMovement(float lAxisX, float rAxisX, float rAxisY) {
         if (Mathf.Abs(lAxisX) > .1f) {
-            float radiusMod = Mathf.Sign(lAxisX) * Mathf.Exp(2 * Mathf.Pow(lAxisX, 2)) - 1;
+            float radiusMod = Mathf.Sign(lAxisX) * (Mathf.Exp(2 * Mathf.Pow(lAxisX, 2)) - 1);
+
+            float oldRotation = rotationAngle;
 
             rotationAngle = (rotationAngle + radiusMod) % 360f;
             rotationAngle = rotationAngle < 0f ? rotationAngle + 360f : rotationAngle;
 
-            transform.rotation.Set(0f, rotationAngle, 0f, 0f);
+            Debug.Log("rotation angle: " + rotationAngle);
+            transform.Rotate(Vector3.up, rotationAngle - oldRotation);
         }
         
         float theta_scale = 0.1f;             //Set lower to add more points

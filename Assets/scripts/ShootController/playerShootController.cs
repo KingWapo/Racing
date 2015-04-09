@@ -8,9 +8,10 @@ public class playerShootController : shootController {
         shooter = GetComponent<playerShooter>();
 
         if (GetComponent<NetworkView>().isMine) {
-            Camera.main.transform.parent = transform;
+            Camera.main.transform.parent = transform.FindChild("RailGun");
 
-            Camera.main.transform.localPosition = new Vector3(0, 1, -3);
+            Camera.main.transform.localPosition = new Vector3(-3, 1, 0);
+            Camera.main.transform.localRotation = Quaternion.Euler(30, 90, 0);
         }
 	}
 	
