@@ -22,10 +22,10 @@ public class PlayerController : Controller {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Waypoint")
+        /*if (other.tag == "Waypoint")
         {
             waypointsHit++;
-        }
+        }*/
     }
 
     public override void UpdateMovement()
@@ -36,7 +36,7 @@ public class PlayerController : Controller {
 
         racer.UpdateMovement(turnAxis, acclAxis);
 
-        print("Updating movement: " + turnAxis + " accel: " + acclAxis);
+        //print("Updating movement: " + turnAxis + " accel: " + acclAxis);
 
         Camera.main.transform.localRotation = Quaternion.Euler(new Vector3(15, 0, -racer.GetLean()));
     }

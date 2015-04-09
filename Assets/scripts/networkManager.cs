@@ -26,6 +26,7 @@ public class networkManager : MonoBehaviour {
     private int lastLevelPrefix = 0;
 
     private new NetworkView networkView;
+    private RacingManager racingManager;
 
     private bool loadingLevel;
 
@@ -39,6 +40,7 @@ public class networkManager : MonoBehaviour {
         DontDestroyOnLoad(this);
         Debug.Log(gameObject.name);
         networkView = GetComponent<NetworkView>();
+        racingManager = GetComponent<RacingManager>();
         networkView.group = 1;
 
         maxNumPlayers = 7; // number of players other than the server
@@ -222,6 +224,8 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
+
+            racingManager.AddRacer(racer, index);
         }
     }
 
@@ -237,6 +241,8 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
+
+            racingManager.AddRacer(racer, index);
         }
     }
 

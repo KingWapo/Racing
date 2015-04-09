@@ -19,8 +19,6 @@ public class playerRacer : MonoBehaviour {
     private new Rigidbody rigidbody;
     private NavMeshAgent agent;
 
-    //public Controller controller;
-
     // Synchronization values
     private float lastSynchronizationTime = 0f;
     private float syncDelay = 0f;
@@ -36,10 +34,7 @@ public class playerRacer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (GetComponent<NetworkView>().isMine) {
-            //controller.UpdateMovement();
-            //InputMovement();
-        } else {
+        if (!GetComponent<NetworkView>().isMine) {
             SyncedMovement();
         }
 	}
