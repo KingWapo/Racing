@@ -41,6 +41,10 @@ public class RacingManager : MonoBehaviour {
             }
             PlacementText.text = places;
         }
+        if (racers[0].GetComponent<BrandonIsAFuck>().Finished)
+        {
+            GetComponent<networkManager>().NextLevel();
+        }
     }
 
     public void AddRacer(GameObject racer, int startPosition)

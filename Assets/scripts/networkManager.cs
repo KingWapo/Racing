@@ -153,6 +153,24 @@ public class networkManager : MonoBehaviour {
         return supportedNetworkLevels;
     }
 
+    public bool NextLevel()
+    {
+        if (queuedLevels.Count > 0)
+        {
+            Network.RemoveRPCsInGroup(0);
+            Network.RemoveRPCsInGroup(1);
+            LoadNewLevel(queuedLevels[0]);
+            queuedLevels.RemoveAt(0);
+            SpawnClientRacers();
+            return true;
+        }
+        else
+        {
+
+        }
+        return false;
+    }
+
     public void LoadNewLevel(string level) {
         networkView.RPC("LoadLevel", RPCMode.AllBuffered, level, lastLevelPrefix + 1);
     }

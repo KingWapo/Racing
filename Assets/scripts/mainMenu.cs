@@ -261,12 +261,8 @@ public class mainMenu : MonoBehaviour {
                 }
 
                 if (GUI.Button(new Rect(btnX * 2, btnY * 2, btnW, btnH), "Start Game")) {
-                    if (networkManager.queuedLevels.Count > 0) {
-                        Network.RemoveRPCsInGroup(0);
-                        Network.RemoveRPCsInGroup(1);
-                        networkManager.LoadNewLevel(networkManager.queuedLevels[0]);
-                        networkManager.queuedLevels.RemoveAt(0);
-                        networkManager.SpawnClientRacers();
+                    if (networkManager.NextLevel())
+                    {
                         ShowMenu(MenuIndex.None);
                     }
                 }
