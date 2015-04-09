@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class RacingManager : MonoBehaviour {
 
-    public GameObject RacersParent;
-
     private List<GameObject> racers;
+    public Text PlacementText;
+
+    // Debug
+    private string places;
 
 	// Use this for initialization
 	void Start () {
         racers = new List<GameObject>();
-	    for (int i = 0; i < RacersParent.transform.childCount; i++)
-        {
-            racers.Add(RacersParent.transform.GetChild(i).gameObject);
-        }
+        places = "";
 	}
 	
 	// Update is called once per frame
@@ -24,7 +24,34 @@ public class RacingManager : MonoBehaviour {
 
     public void UpdatePlacement()
     {
-        QuickSort();
+        if (racers.Count > 0)
+        {
+            places = "Racer 1 " + racers[0].GetComponent<BrandonIsAFuck>().Place + " with " + racers[0].GetComponent<BrandonIsAFuck>().Progress() + "\n";
+            for (int i = 1; i < racers.Count; i++)
+            {
+                if (racers[i].GetComponent<BrandonIsAFuck>().Progress() > racers[i - 1].GetComponent<BrandonIsAFuck>().Progress())
+                {
+                    GameObject temp = racers[i - 1];
+                    racers[i - 1] = racers[i];
+                    racers[i] = temp;
+                    racers[i - 1].GetComponent<BrandonIsAFuck>().Place = i;
+                    racers[i].GetComponent<BrandonIsAFuck>().Place = i + 1;
+                }
+                places += "Racer " + (i + 1) + " " + racers[i].GetComponent<BrandonIsAFuck>().Place + " with " + racers[i].GetComponent<BrandonIsAFuck>().Progress() + "\n";
+            }
+            PlacementText.text = places;
+        }
+    }
+
+    public void AddRacer(GameObject racer, int startPosition)
+    {
+        if (!PlacementText)
+        {
+            print("In here");
+            PlacementText = GameObject.FindGameObjectWithTag("PlacementText").GetComponent<Text>();
+        }
+        racer.GetComponent<BrandonIsAFuck>().Place = (startPosition + 1);
+        racers.Add(racer);
     }
 
     private void QuickSort()

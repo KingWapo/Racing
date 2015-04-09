@@ -50,12 +50,12 @@ public class AIController : Controller
     void OnTriggerEnter(Collider other)
     {
         
-        print(targetIndex);
+        //print(targetIndex);
         if (other.gameObject == waypoints[targetIndex])
         {
             targetIndex = (targetIndex + 1) % waypoints.Count;
             agent.SetDestination(waypoints[targetIndex].transform.position);
-            waypointsHit++;
+            //waypointsHit++;
         }
         
     }
