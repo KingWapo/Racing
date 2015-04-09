@@ -7,8 +7,6 @@ public class playerShooter : MonoBehaviour {
 
     private float sensitivity = .5f;
 
-    private new Rigidbody rigidbody;
-
     private Transform gunForward;
 
     private Vector3 trackCenter;
@@ -26,7 +24,6 @@ public class playerShooter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        rigidbody = GetComponent<Rigidbody>();
         transform.Find("RailGun").Translate(Mathf.Cos(rotationAngle) * trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
         gunForward = transform.FindChild("Gun");
 	}
@@ -49,6 +46,25 @@ public class playerShooter : MonoBehaviour {
 
             transform.rotation.Set(0f, rotationAngle, 0f, 0f);
         }
+        
+        float theta_scale = 0.1f;             //Set lower to add more points
+        int size = (int)((2.0 * Mathf.PI) / theta_scale); //Total number of points in circle.
+
+        /*LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
+        lineRenderer.SetColors(Color.black, Color.red);
+        lineRenderer.SetWidth(0.2F, 0.2F);
+        lineRenderer.SetVertexCount(size);
+
+        int i = 0;
+        for (float theta = 0; theta < 2 * Mathf.PI; theta += 0.1f) {
+            float x = trackRadius * Mathf.Cos(theta);
+            float y = trackRadius * Mathf.Sin(theta);
+
+            Vector3 pos = new Vector3(x, y, 0);
+            lineRenderer.SetPosition(i, pos);
+            i += 1;
+        }*/
     }
 
     void OnSerializedNetworkView(BitStream stream, NetworkMessageInfo info) {
@@ -58,10 +74,10 @@ public class playerShooter : MonoBehaviour {
         Quaternion syncRotation = Quaternion.identity;
 
         if (stream.isWriting) {
-            syncPosition = transform.position;
+            //syncPosition = transform.position;
             stream.Serialize(ref syncPosition);
 
-            syncVelocity = rigidbody.velocity;
+            // = rigidbody.velocity;
             stream.Serialize(ref syncVelocity);
 
             syncRotation = transform.rotation;
@@ -79,7 +95,7 @@ public class playerShooter : MonoBehaviour {
             syncDelay = Time.time - lastSynchronizationTime;
             lastSynchronizationTime = Time.time;
 
-            syncStartPosition = rigidbody.position;
+            syncStartPosition = transform.position;
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
 
             syncStartRotation = syncRotation;
@@ -90,7 +106,7 @@ public class playerShooter : MonoBehaviour {
 
     private void SyncedMovement() {
         syncTime += Time.deltaTime;
-        rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+        transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
         transform.rotation = syncStartRotation;
     }
 

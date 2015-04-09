@@ -208,16 +208,19 @@ public class networkManager : MonoBehaviour {
         loadingLevel = false;
     }
 
-    public void SpawnClientRacers() {
-        networkView.RPC("SpawnRacer", RPCMode.AllBuffered);
+    public void SpawnClients() {
+        networkView.RPC("SpawnClient", RPCMode.AllBuffered);
     }
 
     [RPC]
-    public IEnumerator SpawnRacer() {
+    public IEnumerator SpawnClient() {
         while (loadingLevel) {
             yield return new WaitForSeconds(.1f);
         }
 
+        //networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[0], 0);
+
+        // TODO change back to 0 when done testing shooter
         for (int i = 0; i < playerList.Count; i++) {
             networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
         }
@@ -265,34 +268,12 @@ public class networkManager : MonoBehaviour {
     }
 
     [RPC]
-    public IEnumerator SpawnShooter() {
-        while (loadingLevel) {
-            yield return new WaitForSeconds(.1f);
-        }
-
-        for (int i = 0; i < playerList.Count; i++) {
-            networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[i], i);
-        }
-
-        // only let server call function
-        if (Network.isServer) {
-            for (int i = playerList.Count; i <= maxNumPlayers; i++) {
-                networkView.RPC("SpawnAIShooter", RPCMode.AllBuffered, i);
-            }
-        }
-
-        yield return 1;
-    }
-
-    [RPC]
     private void SpawnPlayerShooter(NetworkPlayer netPlayer, int index) {
-        GameObject startSpots = GameObject.Find("Start Spots");
-        startSpots spotList = startSpots.GetComponent<startSpots>();
-
         if (netPlayer == Network.player) {
+            GameObject spawn = GameObject.Find("ShootingTrackLocation");
             Debug.Log("spawned player shooter: " + index);
-            GameObject shooter = (GameObject)Network.Instantiate(playerShooter, Vector3.zero, Quaternion.identity, 0);
-            //racer.AddComponent<PlayerController>();
+            GameObject shooter = (GameObject)Network.Instantiate(playerShooter, spawn.transform.position, Quaternion.identity, 0);
+            shooter.AddComponent<playerShootController>();
         }
     }
 
