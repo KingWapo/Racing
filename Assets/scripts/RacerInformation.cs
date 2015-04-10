@@ -10,6 +10,8 @@ public class RacerInformation : MonoBehaviour {
     public int waypointsHit;
     public GameObject previousWaypoint;
 
+    private int bankedCoins = 0;
+    private int unbankedCoins = 0;
     private Text placementText;
 
     // Debug
@@ -37,8 +39,16 @@ public class RacerInformation : MonoBehaviour {
         {
             waypointsHit++;
             previousWaypoint = other.gameObject;
+
+            bankedCoins += unbankedCoins;
+            unbankedCoins = 0;
         }
 
+        if (other.tag == "Coin")
+        {
+            unbankedCoins++;
+            Destroy(other.gameObject);
+        }
     }
 
     public float Progress()
