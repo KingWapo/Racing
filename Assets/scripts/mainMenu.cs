@@ -272,6 +272,8 @@ public class mainMenu : MonoBehaviour {
                         networkManager.queuedLevels.RemoveAt(i);
                     }
                 }
+
+                networkManager.ADAM_WANTED_A_BOOLEAN = GUI.Toggle(new Rect(btnX - 100, btnY * 2, btnW, btnH), networkManager.ADAM_WANTED_A_BOOLEAN, "Play as turret");
             }
         }
     }

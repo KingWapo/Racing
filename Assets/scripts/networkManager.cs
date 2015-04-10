@@ -12,6 +12,8 @@ public class networkManager : MonoBehaviour {
     private int maxNumPlayers;
     private int numPlayers;
 
+    public bool ADAM_WANTED_A_BOOLEAN;
+
     private HostData[] hostList;
 
     // Player prefab
@@ -49,6 +51,13 @@ public class networkManager : MonoBehaviour {
         queuedLevels = new List<string>();
         playerList = new List<NetworkPlayer>();
 	}
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            NextLevel();
+            LeaveServer();
+        }
+    }
 
     // Server initialization
     public void StartServer() {
@@ -218,11 +227,17 @@ public class networkManager : MonoBehaviour {
             yield return new WaitForSeconds(.1f);
         }
 
-        networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[0], 0);
+        if (ADAM_WANTED_A_BOOLEAN) {
+            networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[0], 0);
 
-        // TODO change back to 0 when done testing shooter
-        for (int i = 1; i < playerList.Count; i++) {
-            networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
+            // TODO change back to 0 when done testing shooter
+            for (int i = 1; i < playerList.Count; i++) {
+                networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
+            }
+        } else {
+            for (int i = 0; i < playerList.Count; i++) {
+                networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
+            }
         }
 
         // only let server call function
