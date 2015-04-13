@@ -59,7 +59,7 @@ public class playerRacer : MonoBehaviour {
 
         if (Mathf.Abs(acclAxis) > .1f) {
             if (turnAxis != 0) {
-                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(acclAxis), 0);
+                transform.Rotate(0, turnAxis * Time.deltaTime * playerRotation * sensitivity * Mathf.Sign(playerVelocity), 0);
             }
 
             playerVelocity = Mathf.Clamp(playerVelocity + .5f * acclAxis, maxReverseVel, maxForwardVel);
