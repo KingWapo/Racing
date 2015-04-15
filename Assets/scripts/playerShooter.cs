@@ -82,13 +82,13 @@ public class playerShooter : MonoBehaviour {
             if (Physics.Raycast(gunForward.position, gunForward.right, out hit)) {
                 if (hit.collider.gameObject.name.Equals("Racer(Clone)")) {
                     Debug.Log("HIT A CAR!!!");
-                    hit.collider.gameObject.SetActive(false);
+                    hit.collider.GetComponent<playerRacer>().setRunning(false);
                 }
             }
         }
     }
 
-    void OnSerializedNetworkView(BitStream stream, NetworkMessageInfo info) {
+    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
         Quaternion syncGunForward = Quaternion.identity;
@@ -129,14 +129,5 @@ public class playerShooter : MonoBehaviour {
         syncTime += Time.deltaTime;
         transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
         transform.rotation = syncStartRotation;
-    }
-
-    public void InitializeShooterTrack(Vector3 center, float radius, float angle, float offset) {
-        trackCenter = center;
-        trackRadius = radius;
-        rotationAngle = angle;
-        verticalOffset = offset;
-
-        trackCenter.y += verticalOffset;
     }
 }

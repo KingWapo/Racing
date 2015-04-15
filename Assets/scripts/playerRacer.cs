@@ -21,6 +21,8 @@ public class playerRacer : MonoBehaviour {
     private new Rigidbody rigidbody;
     private NavMeshAgent agent;
 
+    private bool running = true;
+
     // Synchronization values
     private float lastSynchronizationTime = 0f;
     private float syncDelay = 0f;
@@ -42,6 +44,10 @@ public class playerRacer : MonoBehaviour {
         if (Mathf.Abs(acceleration) <= 0.1f)
         {
             rigidbody.velocity = Vector3.zero;
+        }
+
+        if (!running) {
+            gameObject.SetActive(running);
         }
 	}
 
@@ -78,10 +84,15 @@ public class playerRacer : MonoBehaviour {
         return playerLean;
     }
 
+    public void setRunning(bool isRunning) {
+        running = isRunning;
+    }
+
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
         Quaternion syncRotation = Quaternion.identity;
+        bool syncRunning = true;
 
         if (stream.isWriting) {
             syncPosition = transform.position;
@@ -92,10 +103,14 @@ public class playerRacer : MonoBehaviour {
 
             syncRotation = transform.rotation;
             stream.Serialize(ref syncRotation);
+
+            syncRunning = running;
+            stream.Serialize(ref syncRunning);
         } else {
             stream.Serialize(ref syncPosition);
             stream.Serialize(ref syncVelocity);
             stream.Serialize(ref syncRotation);
+            stream.Serialize(ref syncRunning);
 
             syncTime = 0f;
             syncDelay = Time.time - lastSynchronizationTime;
@@ -105,6 +120,8 @@ public class playerRacer : MonoBehaviour {
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
 
             syncStartRotation = syncRotation;
+
+            running = syncRunning;
         }
     }
 

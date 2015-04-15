@@ -261,9 +261,10 @@ public class mainMenu : MonoBehaviour {
                 }
 
                 if (GUI.Button(new Rect(btnX * 2, btnY * 2, btnW, btnH), "Start Game")) {
-                    if (networkManager.NextLevel())
-                    {
-                        ShowMenu(MenuIndex.None);
+                    if (networkManager.queuedLevels.Count > 0) {
+                        if (networkManager.NextLevel()) {
+                            ShowMenu(MenuIndex.None);
+                        }
                     }
                 }
 

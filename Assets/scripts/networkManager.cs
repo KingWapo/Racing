@@ -125,6 +125,7 @@ public class networkManager : MonoBehaviour {
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
         playerList.Remove(player);
+        // ADAM REMOVE RACING MANAGER STUFF HERE
     }
 
     void OnFailedToConnect(NetworkConnectionError error) {
