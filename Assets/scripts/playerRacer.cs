@@ -21,6 +21,8 @@ public class playerRacer : MonoBehaviour {
     private new Rigidbody rigidbody;
     private NavMeshAgent agent;
 
+    private Vector3 startPoint;
+
     private bool running = true;
 
     // Synchronization values
@@ -45,11 +47,16 @@ public class playerRacer : MonoBehaviour {
         {
             rigidbody.velocity = Vector3.zero;
         }
-
-        if (!running) {
-            gameObject.SetActive(running);
-        }
 	}
+
+    public void SetStartPoint(Vector3 start) {
+        startPoint = start;
+    }
+
+    public void TeleportToStart() {
+        transform.position = startPoint;
+        transform.rotation = Quaternion.identity;
+    }
 
     public void UpdateMovement(float turnAxis, float acclAxis) {
         acceleration = acclAxis;
@@ -92,10 +99,9 @@ public class playerRacer : MonoBehaviour {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
         Quaternion syncRotation = Quaternion.identity;
-        bool syncRunning = true;
 
         if (stream.isWriting) {
-            syncPosition = transform.position;
+            syncPosition = rigidbody.position;
             stream.Serialize(ref syncPosition);
 
             syncVelocity = rigidbody.velocity;
@@ -103,14 +109,10 @@ public class playerRacer : MonoBehaviour {
 
             syncRotation = transform.rotation;
             stream.Serialize(ref syncRotation);
-
-            syncRunning = running;
-            stream.Serialize(ref syncRunning);
         } else {
             stream.Serialize(ref syncPosition);
             stream.Serialize(ref syncVelocity);
             stream.Serialize(ref syncRotation);
-            stream.Serialize(ref syncRunning);
 
             syncTime = 0f;
             syncDelay = Time.time - lastSynchronizationTime;
@@ -120,8 +122,6 @@ public class playerRacer : MonoBehaviour {
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
 
             syncStartRotation = syncRotation;
-
-            running = syncRunning;
         }
     }
 
