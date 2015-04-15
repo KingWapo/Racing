@@ -22,11 +22,15 @@ public class playerShooter : MonoBehaviour {
     private Vector3 syncEndPosition = Vector3.zero;
     private Quaternion syncStartRotation = Quaternion.identity;
 
+    private networkManager networkManager;
+
 	// Use this for initialization
 	void Start () {
         Transform railGun = transform.Find("RailGun");
         railGun.Translate(Mathf.Cos(rotationAngle) * -trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
         gunForward = railGun.FindChild("Gun");
+
+        networkManager = GameObject.Find("GameManager").GetComponent<networkManager>();
 	}
 	
 	// Update is called once per frame
@@ -82,7 +86,7 @@ public class playerShooter : MonoBehaviour {
             if (Physics.Raycast(gunForward.position, gunForward.right, out hit)) {
                 if (hit.collider.gameObject.name.Equals("Racer(Clone)")) {
                     Debug.Log("HIT A CAR!!!");
-                    hit.collider.GetComponent<playerRacer>().setRunning(false);
+                    hit.collider.GetComponent<playerRacer>().TeleportToStart();
                 }
             }
         }
@@ -95,7 +99,7 @@ public class playerShooter : MonoBehaviour {
         Quaternion syncRotation = Quaternion.identity;
 
         if (stream.isWriting) {
-            //syncPosition = transform.position;
+            syncPosition = transform.position;
             stream.Serialize(ref syncPosition);
 
             // = rigidbody.velocity;

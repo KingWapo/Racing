@@ -124,8 +124,8 @@ public class networkManager : MonoBehaviour {
 
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
+        racingManager.RemoveRacer(player);
         playerList.Remove(player);
-        // ADAM REMOVE RACING MANAGER STUFF HERE
     }
 
     void OnFailedToConnect(NetworkConnectionError error) {
@@ -261,6 +261,7 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
+            racer.GetComponent<playerRacer>().SetStartPoint(start.position);
 
             racingManager.AddRacer(racer, index);
         }
@@ -278,6 +279,7 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
+            racer.GetComponent<playerRacer>().SetStartPoint(start.position);
             racingManager.AddRacer(racer, index);
         }
     }
