@@ -59,6 +59,17 @@ public class RacingManager : MonoBehaviour {
         racers.Add(racer);
     }
 
+    public void RemoveRacer(NetworkPlayer player)
+    {
+        foreach(GameObject racer in racers)
+        {
+            if (racer.GetComponent<RacerInformation>().Player == player)
+            {
+                racers.Remove(racer);
+            }
+        }
+    }
+
     private void QuickSort()
     {
         int left = 0;

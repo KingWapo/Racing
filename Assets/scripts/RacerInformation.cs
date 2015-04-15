@@ -4,6 +4,10 @@ using System.Collections;
 
 public class RacerInformation : MonoBehaviour {
 
+    // Car information
+    public string Name;
+    public NetworkPlayer Player;
+
     // Determining placement
     public bool Finished;
     public int Place;
