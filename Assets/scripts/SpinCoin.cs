@@ -12,4 +12,12 @@ public class SpinCoin : MonoBehaviour {
 	void Update () {
         transform.Rotate(new Vector3(0, 1, 0));
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "DeathBox")
+        {
+            Network.Destroy(this.gameObject);
+        }
+    }
 }
