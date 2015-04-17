@@ -26,7 +26,7 @@ public class RacingManager : MonoBehaviour {
     {
         if (racers.Count > 0)
         {
-            places = "Racer 1 " + racers[0].GetComponent<RacerInformation>().Place + " with " + racers[0].GetComponent<RacerInformation>().Progress() + "\n";
+            /*places = "Racer 1 " + racers[0].GetComponent<RacerInformation>().Place + " with " + racers[0].GetComponent<RacerInformation>().Progress() + "\n";
             for (int i = 1; i < racers.Count; i++)
             {
                 if (racers[i].GetComponent<RacerInformation>().Progress() > racers[i - 1].GetComponent<RacerInformation>().Progress())
@@ -44,6 +44,14 @@ public class RacingManager : MonoBehaviour {
             if (racers[0].GetComponent<RacerInformation>().Finished)
             {
                 GetComponent<networkManager>().NextLevel();
+            }*/
+
+            for (int i = 0; i < racers.Count; i++)
+            {
+                if (racers[i].GetComponent<RacerInformation>().Finished)
+                {
+                    GetComponent<networkManager>().EndMatch();
+                }
             }
         }
     }
@@ -66,37 +74,6 @@ public class RacingManager : MonoBehaviour {
             if (racer.GetComponent<RacerInformation>().Player == player)
             {
                 racers.Remove(racer);
-            }
-        }
-    }
-
-    private void QuickSort()
-    {
-        int left = 0;
-        int right = racers.Count;
-        int pivot = racers[(left + right) / 2].GetComponent<Racer>().Score();
-        GameObject temp;
-        // Partition
-        while (left <= right)
-        {
-            int leftScore = racers[left].GetComponent<Racer>().Score();
-            int rightScore = racers[right].GetComponent<Racer>().Score();
-            while (leftScore < pivot)
-            {
-                left++;
-            }
-            while(rightScore > pivot)
-            {
-                right--;
-            }
-
-            if (left <= right)
-            {
-                temp = racers[left];
-                racers[left] = racers[right];
-                racers[right] = temp;
-                left++;
-                right--;
             }
         }
     }

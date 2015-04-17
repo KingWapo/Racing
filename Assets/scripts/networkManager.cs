@@ -161,6 +161,11 @@ public class networkManager : MonoBehaviour {
         return supportedNetworkLevels;
     }
 
+    public void EndMatch()
+    {
+        NextLevel();
+    }
+
     public bool NextLevel()
     {
         if (queuedLevels.Count > 0)
