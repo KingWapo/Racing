@@ -84,7 +84,7 @@ public class playerShooter : MonoBehaviour {
             RaycastHit hit;
 
             if (Physics.Raycast(gunForward.position, gunForward.right, out hit)) {
-                if (hit.collider.gameObject.name.Equals("Racer(Clone)")) {
+                if (hit.collider.gameObject.tag.Equals("Racer")) {
                     Debug.Log("HIT A CAR!!!");
                     hit.collider.GetComponent<playerRacer>().TeleportToStart();
                 }
