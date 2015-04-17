@@ -22,6 +22,7 @@ public class playerRacer : MonoBehaviour {
     private NavMeshAgent agent;
 
     private Vector3 startPoint;
+    private Quaternion startRotation;
 
     private bool running = true;
 
@@ -49,13 +50,19 @@ public class playerRacer : MonoBehaviour {
         }
 	}
 
-    public void SetStartPoint(Vector3 start) {
+    public void SetStartPoint(Vector3 start, Quaternion rot) {
         startPoint = start;
+        startRotation = rot;
     }
 
     public void TeleportToStart() {
+        GetComponent<NetworkView>().RPC("doTeleport", RPCMode.AllBuffered);
+    }
+
+    [RPC]
+    private void doTeleport() {
         transform.position = startPoint;
-        transform.rotation = Quaternion.identity;
+        transform.rotation = startRotation;
     }
 
     public void UpdateMovement(float turnAxis, float acclAxis) {

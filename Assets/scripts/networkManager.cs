@@ -261,7 +261,7 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
-            racer.GetComponent<playerRacer>().SetStartPoint(start.position);
+            racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
 
             racingManager.AddRacer(racer, index);
         }
@@ -279,7 +279,7 @@ public class networkManager : MonoBehaviour {
             Transform start = spotList.startPositions[index].transform;
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
-            racer.GetComponent<playerRacer>().SetStartPoint(start.position);
+            racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
             racingManager.AddRacer(racer, index);
         }
     }
