@@ -29,17 +29,22 @@ public class RacerInformation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (GetComponent<NetworkView>().isMine)
+        Finished = bankedCoins + unbankedCoins > 1000;
+        if (GetComponent<PlayerController>())
         {
-            //placementText.text = "Current Place: " + Place;
+            print("Score: " + (bankedCoins + unbankedCoins));
         }
-
-        Finished = waypointsHit >= 54;
 	}
 
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Waypoint")
+        {
+            waypointsHit++;
+            previousWaypoint = other.gameObject;
+
+        }
+        if (other.tag == "FinishLine")
         {
             waypointsHit++;
             previousWaypoint = other.gameObject;
