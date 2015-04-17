@@ -45,13 +45,17 @@ public class RacingManager : MonoBehaviour {
             {
                 GetComponent<networkManager>().NextLevel();
             }*/
-
+            
             for (int i = 0; i < racers.Count; i++)
             {
                 if (racers[i].GetComponent<RacerInformation>().Finished)
                 {
                     GetComponent<networkManager>().EndMatch();
                 }
+            }
+            GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
+            if (shooter)
+            {
             }
         }
     }

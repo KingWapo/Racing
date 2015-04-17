@@ -63,6 +63,10 @@ public class playerRacer : MonoBehaviour {
     private void doTeleport() {
         transform.position = startPoint;
         transform.rotation = startRotation;
+
+        GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
+        shooter.GetComponent<playerShootController>().AddCoins(GetComponent<RacerInformation>().unbankedCoins);
+        GetComponent<RacerInformation>().unbankedCoins = 0;
     }
 
     public void UpdateMovement(float turnAxis, float acclAxis) {

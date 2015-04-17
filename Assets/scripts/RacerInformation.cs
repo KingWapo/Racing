@@ -15,7 +15,7 @@ public class RacerInformation : MonoBehaviour {
     public GameObject previousWaypoint;
 
     private int bankedCoins = 0;
-    private int unbankedCoins = 0;
+    public int unbankedCoins = 0;
     private Text placementText;
 
     // Debug

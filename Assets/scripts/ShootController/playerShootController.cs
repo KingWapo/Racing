@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class playerShootController : shootController {
+public class playerShootController : MonoBehaviour {
+
+    private playerShooter shooter;
+    private int bankedCoins;
 
 	// Use this for initialization
 	void Start () {
@@ -22,7 +25,7 @@ public class playerShootController : shootController {
         UpdateMovement();
 	}
 
-    public override void UpdateMovement() {
+    public void UpdateMovement() {
         float lAxisX = Input.GetAxis("360_LeftThumbstick");
         float rAxisX = Input.GetAxis("360_RightThumbstickX");
         float rAxisY = Input.GetAxis("360_RightThumbstickY");
@@ -32,5 +35,10 @@ public class playerShootController : shootController {
 
         float rTrigger = Input.GetAxis("360_Triggers");
         shooter.Shoot(rTrigger);
+    }
+
+    public void AddCoins(int coins)
+    {
+        bankedCoins += coins;
     }
 }
