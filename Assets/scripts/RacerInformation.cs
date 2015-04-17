@@ -29,10 +29,10 @@ public class RacerInformation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Finished = bankedCoins + unbankedCoins > 1000;
+        Finished = bankedCoins > 1000;
         if (GetComponent<PlayerController>())
         {
-            print("Score: " + (bankedCoins + unbankedCoins));
+            print("Score: " + bankedCoins);
         }
 	}
 

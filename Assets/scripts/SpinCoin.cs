@@ -3,6 +3,8 @@ using System.Collections;
 
 public class SpinCoin : MonoBehaviour {
 
+    private int lifetime = 5000;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -11,6 +13,12 @@ public class SpinCoin : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         transform.Rotate(new Vector3(0, 1, 0));
+
+        lifetime--;
+        if ( lifetime <= 0)
+        {
+            Destroy(this.gameObject);
+        }
 	}
 
     void OnTriggerEnter(Collider other)
