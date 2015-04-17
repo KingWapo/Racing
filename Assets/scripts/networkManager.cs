@@ -12,8 +12,6 @@ public class networkManager : MonoBehaviour {
     private int maxNumPlayers;
     private int numPlayers;
 
-    public bool ADAM_WANTED_A_BOOLEAN;
-
     private HostData[] hostList;
 
     // Player prefab
@@ -228,15 +226,16 @@ public class networkManager : MonoBehaviour {
             yield return new WaitForSeconds(.1f);
         }
 
-        if (ADAM_WANTED_A_BOOLEAN) {
-            networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[0], 0);
+        int turretIndex = Random.Range(0, playerList.Count);
 
-            // TODO change back to 0 when done testing shooter
-            for (int i = 1; i < playerList.Count; i++) {
-                networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
-            }
-        } else {
-            for (int i = 0; i < playerList.Count; i++) {
+        networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
+
+        if (Network.isServer) {
+            networkView.RPC("SpawnAI", RPCMode.AllBuffered, turretIndex);
+        }
+
+        for (int i = 0; i < playerList.Count; i++) {
+            if (i != turretIndex) {
                 networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
             }
         }
