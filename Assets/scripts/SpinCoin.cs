@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SpinCoin : MonoBehaviour {
 
-    private int lifetime = 5000;
+    private int lifetime = 1000;
 
 	// Use this for initialization
 	void Start () {
@@ -17,7 +17,7 @@ public class SpinCoin : MonoBehaviour {
         lifetime--;
         if ( lifetime <= 0)
         {
-            Destroy(this.gameObject);
+            Network.Destroy(this.gameObject);
         }
 	}
 

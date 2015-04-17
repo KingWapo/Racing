@@ -56,7 +56,7 @@ public class RacerInformation : MonoBehaviour {
         if (other.tag == "Coin")
         {
             unbankedCoins++;
-            Destroy(other.gameObject);
+            Network.Destroy(other.gameObject);
         }
     }
 
