@@ -3,7 +3,7 @@ using System.Collections;
 
 public class playerRacer : MonoBehaviour {
 
-    public float speed = 10f;
+    public float speed = 30f;
 
     private float sensitivity = .5f;
 
@@ -13,7 +13,7 @@ public class playerRacer : MonoBehaviour {
 
     private float playerVelocity = 0f;
 
-    private float maxForwardVel = 30f;
+    private float maxForwardVel = 50f;
     private float maxReverseVel = -4f;
 
     private float acceleration = 0f;

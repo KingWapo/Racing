@@ -233,16 +233,16 @@ public class networkManager : MonoBehaviour {
 
         int turretIndex = Random.Range(0, playerList.Count);
 
-        networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
+        //networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
 
         if (Network.isServer) {
             networkView.RPC("SpawnAI", RPCMode.AllBuffered, turretIndex);
         }
 
         for (int i = 0; i < playerList.Count; i++) {
-            if (i != turretIndex) {
+            //if (i != turretIndex) {
                 networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
-            }
+            //}
         }
 
         // only let server call function

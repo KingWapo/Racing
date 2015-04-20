@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SpinCoin : MonoBehaviour {
 
-    private int lifetime = 1000;
+    private int lifetime = 500;
 
 	// Use this for initialization
 	void Start () {

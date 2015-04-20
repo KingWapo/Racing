@@ -3,6 +3,8 @@ using System.Collections;
 
 public class playerShootController : MonoBehaviour {
 
+    public bool Finished;
+
     private playerShooter shooter;
     private int bankedCoins;
 
@@ -22,6 +24,8 @@ public class playerShootController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        Finished = bankedCoins >= 500;
+
         UpdateMovement();
 	}
 
