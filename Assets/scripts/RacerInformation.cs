@@ -61,6 +61,14 @@ public class RacerInformation : MonoBehaviour {
         }
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.tag == "Racer")
+        {
+            SlowDown();
+        }
+    }
+
     public float Progress()
     {
         if (previousWaypoint)
@@ -70,5 +78,10 @@ public class RacerInformation : MonoBehaviour {
         }
         else
             return 1.0f / Place;
+    }
+
+    private void SlowDown()
+    {
+
     }
 }

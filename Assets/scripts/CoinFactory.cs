@@ -30,9 +30,12 @@ public class CoinFactory : MonoBehaviour {
 
     private void spawnCoin()
     {
-        float x = transform.position.x + Random.Range(-summonX, summonX);
-        float z = transform.position.z + Random.Range(-summonZ, summonZ);
-        Vector3 pos = new Vector3(x, transform.position.y, z);
-        Network.Instantiate(CoinPrefab, pos, Quaternion.identity, 0);
+        if (Network.isServer)
+        {
+            float x = transform.position.x + Random.Range(-summonX, summonX);
+            float z = transform.position.z + Random.Range(-summonZ, summonZ);
+            Vector3 pos = new Vector3(x, transform.position.y, z);
+            Network.Instantiate(CoinPrefab, pos, Quaternion.identity, 0);
+        }
     }
 }

@@ -5,6 +5,8 @@ public class playerRacer : MonoBehaviour {
 
     public float speed = 30f;
 
+    public float LossFactor = 0.01f;
+
     private float sensitivity = .5f;
 
     private float playerRotation = 300f;
@@ -140,5 +142,11 @@ public class playerRacer : MonoBehaviour {
         syncTime += Time.deltaTime;
         rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
         transform.rotation = syncStartRotation;
+    }
+
+    public void SlowDown()
+    {
+        maxForwardVel -= LossFactor;
+        agent.speed = maxForwardVel;
     }
 }
