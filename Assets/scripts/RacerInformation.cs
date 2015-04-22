@@ -18,6 +18,8 @@ public class RacerInformation : MonoBehaviour {
     public int unbankedCoins = 0;
     private Text placementText;
 
+    private playerRacer racer;
+
     // Debug
     public float Score;
 
@@ -25,6 +27,7 @@ public class RacerInformation : MonoBehaviour {
 	void Start () {
         waypointsHit = 0;
         placementText = GameObject.FindGameObjectWithTag("Place").GetComponent<Text>();
+        racer = GetComponent<playerRacer>();
 	}
 	
 	// Update is called once per frame
@@ -63,9 +66,17 @@ public class RacerInformation : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.tag == "Racer")
+        if (collision.collider.tag == "Racer")
         {
-            SlowDown();
+            racer.BeginSlow();
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.tag == "Racer")
+        {
+            racer.StopSlow();
         }
     }
 
@@ -80,8 +91,4 @@ public class RacerInformation : MonoBehaviour {
             return 1.0f / Place;
     }
 
-    private void SlowDown()
-    {
-
-    }
 }

@@ -5,7 +5,9 @@ public class playerRacer : MonoBehaviour {
 
     public float speed = 30f;
 
-    public float LossFactor = 0.01f;
+    public float LossFactor;
+
+    private float lossFactor = 0;
 
     private float sensitivity = .5f;
 
@@ -39,6 +41,7 @@ public class playerRacer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
 	}
 	
 	// Update is called once per frame
@@ -50,6 +53,7 @@ public class playerRacer : MonoBehaviour {
         {
             rigidbody.velocity = Vector3.zero;
         }
+        SlowDown();
 	}
 
     public void SetStartPoint(Vector3 start, Quaternion rot) {
@@ -144,9 +148,23 @@ public class playerRacer : MonoBehaviour {
         transform.rotation = syncStartRotation;
     }
 
+    public void BeginSlow()
+    {
+        lossFactor = LossFactor;
+    }
+
+    public void StopSlow()
+    {
+        lossFactor = 0;
+    }
+
     public void SlowDown()
     {
-        maxForwardVel -= LossFactor;
+        maxForwardVel = Mathf.Max(maxForwardVel - lossFactor, 20.0f);
         agent.speed = maxForwardVel;
+        if (GetComponent<PlayerController>())
+        {
+            print("Slowing Down: " + maxForwardVel);
+        }
     }
 }
