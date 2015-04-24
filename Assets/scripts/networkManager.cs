@@ -198,6 +198,8 @@ public class networkManager : MonoBehaviour {
         else
         {
             networkView.RPC("LoadLevel", RPCMode.AllBuffered, disconnectedLevel, lastLevelPrefix + 1);
+
+            LeaveServer();
         }
         return false;
     }
