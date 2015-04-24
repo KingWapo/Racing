@@ -69,7 +69,7 @@ public class MenuStuffs : MonoBehaviour {
 
         HostData[] hostList;
 
-        float timeout = 10.0f;
+        float timeout = 2.0f;
 
         do {
             hostList = netManager.GetHostList();
@@ -81,7 +81,7 @@ public class MenuStuffs : MonoBehaviour {
             Debug.Log("REFRESHING: " + hostList.Length);
 
             for (int i = 0; i < hostList.Length; i++) {
-                //if (hostList[i].connectedPlayers <= hostList[i].playerLimit) {
+               if (hostList[i].connectedPlayers <= hostList[i].playerLimit) {
                     GameObject newButton = (GameObject)Instantiate(serverButton);
                     Text[] texts = newButton.GetComponentsInChildren<Text>();
 
@@ -101,8 +101,10 @@ public class MenuStuffs : MonoBehaviour {
 
                     HostData hostData = hostList[i];
                     b.onClick.AddListener(() => JoinGame(hostData));
-                //}
+                }
             }
+        } else {
+            Debug.Log("no host list");
         }
     }
 
