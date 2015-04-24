@@ -71,14 +71,16 @@ public class networkManager : MonoBehaviour {
 
         MasterServer.RegisterHost(typeName, gameName);
 
+        numPlayers = maxNumPlayers;
         playerList.Add(Network.player);
         nameList.Add(displayName);
         UpdateClientPlayers();
     }
 
     public void StartPrivateServer() {
+        gameName = "thisismyprivateserverleavenow";
         gamePass = "myPrivateServer";
-        numPlayers = 1;
+        numPlayers = 0;
         StartServer("femur");
     }
 

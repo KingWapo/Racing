@@ -49,15 +49,21 @@ public class MenuStuffs : MonoBehaviour {
     public void GotoMain() {
         requestedHost = null;
         DisplayMenu(Menu.main);
+
+        netManager.LeaveServer();
     }
 
     public void GotoServers() {
         DisplayMenu(Menu.servers);
+
+        netManager.LeaveServer();
     }
 
     public void RefreshServers() {
         netManager.RefreshHostList();
         HostData[] hostList = netManager.GetHostList();
+
+        Debug.Log("REFRESHING: " + hostList.Length);
 
         Transform serverList = serverListDisplay.transform;
         foreach (Transform child in serverList) {
@@ -227,6 +233,11 @@ public class MenuStuffs : MonoBehaviour {
 
             GotoLobby();
         }
+    }
+
+    public void StartPrivateServer() {
+        netManager.StartPrivateServer();
+        GotoLobby();
     }
 
     public void StartGame() {
