@@ -101,6 +101,8 @@ public class networkManager : MonoBehaviour {
         if (msEvent == MasterServerEvent.HostListReceived) {
             hostList = MasterServer.PollHostList();
             receivedHostList = true;
+        } else if (msEvent == MasterServerEvent.RegistrationSucceeded) {
+            Debug.Log("Server is hosted!");
         }
     }
 
