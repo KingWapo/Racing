@@ -61,16 +61,24 @@ public class MenuStuffs : MonoBehaviour {
 
     public void RefreshServers() {
         netManager.RefreshHostList();
-        HostData[] hostList = netManager.GetHostList();
-
-        //Debug.Log("REFRESHING: " + hostList.Length);
 
         Transform serverList = serverListDisplay.transform;
         foreach (Transform child in serverList) {
             Destroy(child.gameObject);
         }
 
+        HostData[] hostList;
+
+        float timeout = 10.0f;
+
+        do {
+            hostList = netManager.GetHostList();
+            timeout -= Time.deltaTime;
+        } while (!netManager.didReceiveHostList() && timeout > 0.0f);
+
         if (hostList != null) {
+            Debug.Log("REFRESHING: " + hostList.Length);
+
             for (int i = 0; i < hostList.Length; i++) {
                 if (hostList[i].connectedPlayers <= hostList[i].playerLimit) {
                     GameObject newButton = (GameObject)Instantiate(serverButton);

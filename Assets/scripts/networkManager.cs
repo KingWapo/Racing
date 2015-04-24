@@ -36,6 +36,8 @@ public class networkManager : MonoBehaviour {
 
     private string connectingName;
 
+    private bool receivedHostList;
+
     void Awake() {
     }
 	// Use this for initialization
@@ -92,11 +94,18 @@ public class networkManager : MonoBehaviour {
     // Refresh host list
     public void RefreshHostList() {
         MasterServer.RequestHostList(typeName);
+        receivedHostList = false;
     }
 
     void OnMasterServerEvent(MasterServerEvent msEvent) {
-        if (msEvent == MasterServerEvent.HostListReceived)
+        if (msEvent == MasterServerEvent.HostListReceived) {
             hostList = MasterServer.PollHostList();
+            receivedHostList = true;
+        }
+    }
+
+    public bool didReceiveHostList() {
+        return receivedHostList;
     }
 
     // Join existing server
