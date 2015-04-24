@@ -67,25 +67,19 @@ public class MenuStuffs : MonoBehaviour {
             Destroy(child.gameObject);
         }
 
-        HostData[] hostList;
+        HostData[] hostList = netManager.GetHostList();
 
-        float timeout = 2.0f;
-
-        do {
-            hostList = netManager.GetHostList();
-            timeout -= Time.deltaTime;
-            Debug.Log("remaining time: " + timeout);
-        } while (!netManager.didReceiveHostList() && timeout > 0.0f);
+        // DONT DELETE THIS BECAUSE UNITY IS STUPID
+        Debug.Log("REFRESHING: " + hostList.Length);
 
         if (hostList != null) {
-            Debug.Log("REFRESHING: " + hostList.Length);
 
             for (int i = 0; i < hostList.Length; i++) {
                if (hostList[i].connectedPlayers <= hostList[i].playerLimit) {
                     GameObject newButton = (GameObject)Instantiate(serverButton);
                     Text[] texts = newButton.GetComponentsInChildren<Text>();
 
-                    //Debug.Log("texts length: " + texts.Length);
+                    Debug.Log("texts length: " + texts.Length);
                     texts[0].text = hostList[i].gameName;
                     texts[1].text = "Players\n" + hostList[i].connectedPlayers + "/" + hostList[i].playerLimit;
                     texts[2].text = "Password: ";

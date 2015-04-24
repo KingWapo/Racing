@@ -80,7 +80,7 @@ public class networkManager : MonoBehaviour {
     }
 
     public void StartPrivateServer() {
-        //gameName = "thisismyprivateserverleavenow";
+        gameName = "thisismyprivateserverleavenow";
         gamePass = "myPrivateServer";
         numPlayers = 0;
         StartServer("femur");
@@ -125,10 +125,9 @@ public class networkManager : MonoBehaviour {
         Debug.Log("Server Joined");
 
         MenuStuffs menu = FindObjectOfType<MenuStuffs>();
+        menu.DisplayMenu(Menu.lobby);
 
         networkView.RPC("AddPlayer", RPCMode.Server, connectingName);
-
-        menu.DisplayMenu(Menu.lobby);
     }
 
     void OnPlayerConnected(NetworkPlayer player) {
