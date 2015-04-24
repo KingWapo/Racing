@@ -44,6 +44,10 @@ public class playerRacer : MonoBehaviour {
 	void Start () {
         rigidbody = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
+        if (GetComponent<AIController>())
+        {
+            maxForwardVel = agent.speed;
+        }
 	}
 	
 	// Update is called once per frame

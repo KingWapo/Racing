@@ -20,9 +20,9 @@ public class AIController : Controller
             agent = gameObject.AddComponent<NavMeshAgent>();
 
             // Current values. Possibly change to being passed in.
-            agent.radius = 0.75f;
-            agent.speed = 62;
-            agent.acceleration = 150;
+            //agent.radius = 0.75f;
+            //agent.speed = 62;
+            //agent.acceleration = 150;
         }
         else
         {
