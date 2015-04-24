@@ -1,36 +1,17 @@
 fileFormatVersion: 2
-guid: 9c5e01754bad88f43968acd122e53000
-timeCreated: 1429907938
+guid: 021c381f556535c49af5a84d557281f9
+timeCreated: 1429910641
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: Cylinder_002
-    100002: //RootNode
-    100004: TurretBarrel
-    100006: TurretTop
-    100008: TurretTower
-    400000: Cylinder_002
-    400002: //RootNode
-    400004: TurretBarrel
-    400006: TurretTop
-    400008: TurretTower
-    2300000: Cylinder_002
-    2300002: TurretBarrel
-    2300004: TurretTop
-    2300006: TurretTower
-    3300000: Cylinder_002
-    3300002: TurretBarrel
-    3300004: TurretTop
-    3300006: TurretTower
-    4300000: Cylinder_002
-    4300002: TurretTop
-    4300004: TurretTower
-    4300006: TurretBarrel
-    7400000: Default Take
-    9500000: //RootNode
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: TurretTower
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:
@@ -53,7 +34,7 @@ ModelImporter:
     addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
-    generateSecondaryUV: 1
+    generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
@@ -82,7 +63,7 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
