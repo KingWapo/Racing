@@ -154,7 +154,7 @@ public class mainMenu : MonoBehaviour {
                             connectingToHost = hostList[i];
                             ShowMenu(MenuIndex.JoinGame);
                         } else {
-                            networkManager.JoinServer(hostList[i]);
+                            networkManager.JoinServer(hostList[i], "asdf");
                             ShowMenu(MenuIndex.GameLobby);
                         }
                     }
@@ -185,7 +185,7 @@ public class mainMenu : MonoBehaviour {
 
         if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "Start Server")) {
             if (networkManager.GetGameName() != "") {
-                networkManager.StartServer();
+                networkManager.StartServer("asdf");
                 ShowMenu(MenuIndex.GameLobby);
             }
         }

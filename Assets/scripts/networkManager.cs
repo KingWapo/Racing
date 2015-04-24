@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NetworkView))]
 public class networkManager : MonoBehaviour {
@@ -31,6 +32,9 @@ public class networkManager : MonoBehaviour {
     private bool loadingLevel;
 
     private List<NetworkPlayer> playerList;
+    private List<string> nameList;
+
+    private string connectingName;
 
     void Awake() {
     }
@@ -48,6 +52,7 @@ public class networkManager : MonoBehaviour {
 
         queuedLevels = new List<string>();
         playerList = new List<NetworkPlayer>();
+        nameList = new List<string>();
 	}
 
     void Update() {
@@ -58,7 +63,7 @@ public class networkManager : MonoBehaviour {
     }
 
     // Server initialization
-    public void StartServer() {
+    public void StartServer(string displayName) {
         RefreshHostList();
 
         Network.incomingPassword = gamePass;
@@ -67,12 +72,14 @@ public class networkManager : MonoBehaviour {
         MasterServer.RegisterHost(typeName, gameName);
 
         playerList.Add(Network.player);
+        nameList.Add(displayName);
+        UpdateClientPlayers();
     }
 
     public void StartPrivateServer() {
         gamePass = "myPrivateServer";
         numPlayers = 1;
-        StartServer();
+        StartServer("femur");
     }
 
     void OnServerInitialized() {
@@ -91,24 +98,31 @@ public class networkManager : MonoBehaviour {
     }
 
     // Join existing server
-    public void JoinServer(HostData hostData) {
+    public void JoinServer(HostData hostData, string displayName) {
         Network.Connect(hostData);
+        connectingName = displayName;
     }
 
-    public void JoinServer(HostData hostData, string pass) {
+    public void JoinServer(HostData hostData, string pass, string displayName) {
         Network.Connect(hostData, pass);
+        connectingName = displayName;
     }
 
     void OnConnectedToServer() {
         Debug.Log("Server Joined");
 
-        mainMenu menu = FindObjectOfType<mainMenu>();
+        MenuStuffs menu = FindObjectOfType<MenuStuffs>();
 
-        menu.ShowMenu(MenuIndex.GameLobby);
+        networkView.RPC("AddPlayer", RPCMode.Server, connectingName);
+
+        menu.DisplayMenu(Menu.lobby);
     }
 
     void OnPlayerConnected(NetworkPlayer player) {
         playerList.Add(player);
+        nameList.Add(connectingName);
+
+        UpdateClientLevels();
     }
 
     // Disconnect from server
@@ -123,14 +137,19 @@ public class networkManager : MonoBehaviour {
     void OnPlayerDisconnected(NetworkPlayer player) {
         Network.DestroyPlayerObjects(player);
         racingManager.RemoveRacer(player);
+
+        int i = playerList.IndexOf(player);
         playerList.Remove(player);
+        nameList.RemoveAt(i);
+
+        UpdateClientPlayers();
     }
 
     void OnFailedToConnect(NetworkConnectionError error) {
-        mainMenu menu = FindObjectOfType<mainMenu>();
+        MenuStuffs menu = FindObjectOfType<MenuStuffs>();
 
-        menu.connectionError = "Failed to connect to server: " + error;
-        menu.ShowMenu(MenuIndex.ConnectFail);
+        menu.hostErrorText.GetComponent<Text>().text = "Failed to connect to server: " + error;
+        menu.DisplayMenu(Menu.join);
     }
 
     public HostData[] GetHostList() {
@@ -186,6 +205,81 @@ public class networkManager : MonoBehaviour {
 
     public void LoadNewLevel(string level) {
         networkView.RPC("LoadLevel", RPCMode.AllBuffered, level, lastLevelPrefix + 1);
+    }
+
+    public void UpdateClientPlayers() {
+        string players = "";
+
+        for (int i = 0; i < playerList.Count; i++) {
+            players += nameList[i];
+
+            if (i < playerList.Count - 1) {
+                players += ",";
+            }
+        }
+
+        networkView.RPC("UpdatePlayerList", RPCMode.AllBuffered, players);
+    }
+
+    [RPC]
+    void UpdatePlayerList(string players) {
+        MenuStuffs menu = FindObjectOfType<MenuStuffs>();
+
+        string[] playersInGame = new string[0];
+
+        if (players != "") {
+            playersInGame = players.Split(',');
+        }
+
+        nameList.Clear();
+
+        foreach (string name in playersInGame) {
+            nameList.Add(name);
+        }
+
+        Debug.Log("number of players: " + playersInGame.Length);
+        menu.UpdateLobbyPlayerList(playersInGame);
+    }
+
+    public void UpdateClientLevels() {
+        string levels = "";
+
+        for (int i = 0; i < queuedLevels.Count; i++) {
+            levels += queuedLevels[i];
+
+            if (i < queuedLevels.Count - 1) {
+                levels += ",";
+            }
+        }
+
+        Debug.Log("levels string: " + levels);
+        networkView.RPC("UpdateLevelsList", RPCMode.AllBuffered, levels);
+    }
+
+    [RPC]
+    void UpdateLevelsList(string levels) {
+        MenuStuffs menu = FindObjectOfType<MenuStuffs>();
+
+        string[] queueLevels = new string[0];
+
+        if (levels != "") {
+            queueLevels = levels.Split(',');
+        }
+
+        queuedLevels.Clear();
+        foreach (string level in queueLevels) {
+            queuedLevels.Add(level);
+        }
+
+        Debug.Log("number of levels: " + queueLevels.Length);
+        menu.UpdateLevelsList(queueLevels);
+    }
+
+    [RPC]
+    void AddPlayer(string newPlayer) {
+        //TODO figure out why it updated before adding player
+        nameList.Add(newPlayer);
+        UpdateClientPlayers();
     }
 
     // Load Levels
@@ -310,7 +404,7 @@ public class networkManager : MonoBehaviour {
     }
 
     void OnGUI() {
-        if (Network.isServer) {
+        /*if (Network.isServer) {
             int arrayindex = -1;
             for (int i = 0; i < playerList.Count; i++) {
                 GUI.Label(new Rect(20, 200 + 80 * i, 160, 80), "Index: " + i + "\nPlayerID: " + playerList[i]);
@@ -320,6 +414,6 @@ public class networkManager : MonoBehaviour {
             }
 
             GUI.Label(new Rect(20, 20, 160, 80), "Connections: " + playerList.Count + "\nNetwork ID: " + Network.player.ToString() + "\nArray Index: " + arrayindex);
-        }
+        }*/
     }
 }
