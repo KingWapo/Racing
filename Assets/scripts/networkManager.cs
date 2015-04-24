@@ -80,7 +80,7 @@ public class networkManager : MonoBehaviour {
     }
 
     public void StartPrivateServer() {
-        gameName = "thisismyprivateserverleavenow";
+        //gameName = "thisismyprivateserverleavenow";
         gamePass = "myPrivateServer";
         numPlayers = 0;
         StartServer("femur");
