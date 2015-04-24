@@ -63,7 +63,7 @@ public class MenuStuffs : MonoBehaviour {
         netManager.RefreshHostList();
         HostData[] hostList = netManager.GetHostList();
 
-        Debug.Log("REFRESHING: " + hostList.Length);
+        //Debug.Log("REFRESHING: " + hostList.Length);
 
         Transform serverList = serverListDisplay.transform;
         foreach (Transform child in serverList) {
@@ -76,7 +76,7 @@ public class MenuStuffs : MonoBehaviour {
                     GameObject newButton = (GameObject)Instantiate(serverButton);
                     Text[] texts = newButton.GetComponentsInChildren<Text>();
 
-                    Debug.Log("texts length: " + texts.Length);
+                    //Debug.Log("texts length: " + texts.Length);
                     texts[0].text = hostList[i].gameName;
                     texts[1].text = "Players\n" + hostList[i].connectedPlayers + "/" + hostList[i].playerLimit;
                     texts[2].text = "Password: ";

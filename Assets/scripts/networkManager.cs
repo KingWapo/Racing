@@ -42,7 +42,7 @@ public class networkManager : MonoBehaviour {
 	void Start () {
         // Network level loading is done in a separate channel
         DontDestroyOnLoad(this);
-        Debug.Log(gameObject.name);
+        //Debug.Log(gameObject.name);
         networkView = GetComponent<NetworkView>();
         racingManager = GetComponent<RacingManager>();
         networkView.group = 1;
@@ -325,16 +325,18 @@ public class networkManager : MonoBehaviour {
 
         int turretIndex = Random.Range(0, playerList.Count);
 
-        //networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
+        if (playerList.Count >= 2) {
+            networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
 
-        if (Network.isServer) {
-            networkView.RPC("SpawnAI", RPCMode.AllBuffered, turretIndex);
+            if (Network.isServer) {
+                networkView.RPC("SpawnAI", RPCMode.AllBuffered, turretIndex);
+            }
         }
 
         for (int i = 0; i < playerList.Count; i++) {
-            //if (i != turretIndex) {
+            if (playerList.Count < 2 || i != turretIndex) {
                 networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
-            //}
+            }
         }
 
         // only let server call function
@@ -358,6 +360,7 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
+            racer.GetComponent<playerRacer>().playerName = nameList[index];
 
             racingManager.AddRacer(racer, index);
         }
@@ -376,6 +379,8 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
+            racer.GetComponent<playerRacer>().playerName = "AI Racer";
+
             racingManager.AddRacer(racer, index);
         }
     }

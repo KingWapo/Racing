@@ -3,6 +3,8 @@ using System.Collections;
 
 public class playerRacer : MonoBehaviour {
 
+    public string playerName;
+
     public float speed = 30f;
 
     public float LossFactor;
@@ -69,6 +71,10 @@ public class playerRacer : MonoBehaviour {
     private void doTeleport() {
         transform.position = startPoint;
         transform.rotation = startRotation;
+
+        syncStartPosition = startPoint;
+        syncEndPosition = startPoint;
+        syncStartRotation = startRotation;
 
         GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
         shooter.GetComponent<playerShootController>().AddCoins(GetComponent<RacerInformation>().unbankedCoins);
