@@ -120,9 +120,6 @@ public class networkManager : MonoBehaviour {
 
     void OnPlayerConnected(NetworkPlayer player) {
         playerList.Add(player);
-        nameList.Add(connectingName);
-
-        UpdateClientLevels();
     }
 
     // Disconnect from server
@@ -148,8 +145,8 @@ public class networkManager : MonoBehaviour {
     void OnFailedToConnect(NetworkConnectionError error) {
         MenuStuffs menu = FindObjectOfType<MenuStuffs>();
 
-        menu.hostErrorText.GetComponent<Text>().text = "Failed to connect to server: " + error;
         menu.DisplayMenu(Menu.join);
+        menu.joinErrorText.GetComponent<Text>().text = "Failed to connect to server: " + error;
     }
 
     public HostData[] GetHostList() {
@@ -277,7 +274,6 @@ public class networkManager : MonoBehaviour {
 
     [RPC]
     void AddPlayer(string newPlayer) {
-        //TODO figure out why it updated before adding player
         nameList.Add(newPlayer);
         UpdateClientPlayers();
     }

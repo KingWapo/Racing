@@ -66,25 +66,27 @@ public class MenuStuffs : MonoBehaviour {
 
         if (hostList != null) {
             for (int i = 0; i < hostList.Length; i++) {
-                GameObject newButton = (GameObject)Instantiate(serverButton);
-                Text[] texts = newButton.GetComponentsInChildren<Text>();
+                if (hostList[i].connectedPlayers < hostList[i].playerLimit) {
+                    GameObject newButton = (GameObject)Instantiate(serverButton);
+                    Text[] texts = newButton.GetComponentsInChildren<Text>();
 
-                Debug.Log("texts length: " + texts.Length);
-                texts[0].text = hostList[i].gameName;
-                texts[1].text = "Players\n" + hostList[i].connectedPlayers + "/" + hostList[i].playerLimit;
-                texts[2].text = "Password: ";
+                    Debug.Log("texts length: " + texts.Length);
+                    texts[0].text = hostList[i].gameName;
+                    texts[1].text = "Players\n" + hostList[i].connectedPlayers + "/" + hostList[i].playerLimit;
+                    texts[2].text = "Password: ";
 
-                if (hostList[i].passwordProtected) {
-                    texts[2].text += "yes";
-                } else {
-                    texts[2].text += "no";
+                    if (hostList[i].passwordProtected) {
+                        texts[2].text += "yes";
+                    } else {
+                        texts[2].text += "no";
+                    }
+
+                    newButton.transform.SetParent(serverListDisplay.transform);
+                    Button b = newButton.GetComponent<Button>();
+
+                    HostData hostData = hostList[i];
+                    b.onClick.AddListener(() => JoinGame(hostData));
                 }
-
-                newButton.transform.SetParent(serverListDisplay.transform);
-                Button b = newButton.GetComponent<Button>();
-
-                HostData hostData = hostList[i];
-                b.onClick.AddListener(() => JoinGame(hostData));
             }
         }
     }
