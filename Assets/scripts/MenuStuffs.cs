@@ -216,6 +216,8 @@ public class MenuStuffs : MonoBehaviour {
             } else {
                 netManager.JoinServer(requestedHost, sPass, dName);
             }
+        } else {
+            Debug.Log("Something went wrong");
         }
     }
 

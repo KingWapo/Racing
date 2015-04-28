@@ -13,12 +13,8 @@ public class playerShootController : MonoBehaviour {
         shooter = GetComponent<playerShooter>();
 
         if (GetComponent<NetworkView>().isMine) {
-            Camera.main.transform.parent = transform.FindChild("RailGun").FindChild("Gun");
-
-            Camera.main.transform.localPosition = new Vector3(-.41f, 1.1f, 1.06f);
-            Camera.main.transform.localRotation = Quaternion.Euler(0, 90, 0);
-            //Camera.main.transform.localPosition = new Vector3(-1, 3, 0);
-            //Camera.main.transform.localRotation = Quaternion.Euler(60, 90, 0);
+            Camera.main.transform.parent = shooter.goRing.transform;
+            Camera.main.transform.localPosition = new Vector3(1.2f, 0, 2.1f);
         }
 	}
 	
@@ -26,16 +22,17 @@ public class playerShootController : MonoBehaviour {
 	void Update () {
         Finished = bankedCoins >= 500;
 
-        UpdateMovement();
+        if (GetComponent<NetworkView>().isMine) {
+            UpdateMovement();
+        }
 	}
 
     public void UpdateMovement() {
-        float lAxisX = Input.GetAxis("360_LeftThumbstick");
         float rAxisX = Input.GetAxis("360_RightThumbstickX");
         float rAxisY = Input.GetAxis("360_RightThumbstickY");
 
         //Debug.Log("AXIS: " + lAxisX + ", " + rAxisX + ", " + rAxisY);
-        shooter.UpdateMovement(lAxisX, rAxisX, rAxisY);
+        shooter.UpdateMovement(rAxisX, rAxisY);
 
         float rTrigger = Input.GetAxis("360_Triggers");
         shooter.Shoot(rTrigger);

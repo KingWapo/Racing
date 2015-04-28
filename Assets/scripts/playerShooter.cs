@@ -3,16 +3,13 @@ using System.Collections;
 
 public class playerShooter : MonoBehaviour {
 
-    public float trackSpeed = 10f;
-
     private float sensitivity = .5f;
 
-    private Transform gunForward;
+    public GameObject goBarrel;
+    public GameObject goRing;
 
-    private Vector3 trackCenter;
-    private float trackRadius = 50f;
-    private float rotationAngle;
-    private float verticalOffset;
+    private Transform barrel;
+    private Transform ring;
 
     // Synchronization values
     private float lastSynchronizationTime = 0f;
@@ -20,17 +17,13 @@ public class playerShooter : MonoBehaviour {
     private float syncTime = 0f;
     private Vector3 syncStartPosition = Vector3.zero;
     private Vector3 syncEndPosition = Vector3.zero;
-    private Quaternion syncStartRotation = Quaternion.identity;
 
     private networkManager networkManager;
 
 	// Use this for initialization
 	void Start () {
-        Transform railGun = transform.Find("RailGun");
-        railGun.Translate(Mathf.Cos(rotationAngle) * -trackRadius, Mathf.Sin(rotationAngle) * trackRadius, 0);
-        gunForward = railGun.FindChild("Gun");
-
-        networkManager = GameObject.Find("GameManager").GetComponent<networkManager>();
+        ring = goRing.transform;
+        barrel = goBarrel.transform;
 	}
 	
 	// Update is called once per frame
@@ -42,40 +35,26 @@ public class playerShooter : MonoBehaviour {
         }
 	}
 
-    public void UpdateMovement(float lAxisX, float rAxisX, float rAxisY) {
-        if (Mathf.Abs(lAxisX) > .1f) {
-            float radiusMod = Mathf.Sign(lAxisX) * (Mathf.Exp(2 * Mathf.Pow(lAxisX, 2)) - 1);
-
-            float oldRotation = rotationAngle;
-
-            rotationAngle = (rotationAngle + radiusMod) % 360f;
-            rotationAngle = rotationAngle < 0f ? rotationAngle + 360f : rotationAngle;
-
-            transform.Rotate(Vector3.up, rotationAngle - oldRotation);
-        }
-
-        float rotBound = 45f;
+    public void UpdateMovement(float rAxisX, float rAxisY) {
 
         if (Mathf.Abs(rAxisX) > .1f) {
-            Vector3 rotation = gunForward.localRotation.eulerAngles;
-            rotation.y += rAxisX;
-            if (rotation.y > rotBound && rotation.y < 180) {
-                rotation.y = rotBound;
-            }
+            Vector3 rotation = ring.localRotation.eulerAngles;
+            rotation.z += rAxisX;
 
-            if (rotation.y < 360f - rotBound && rotation.y > 180) {
-                rotation.y = 360f - rotBound;
-            }
+            if (rotation.z >= 360)
+                rotation.z -= 360;
+            else if (rotation.z < 0)
+                rotation.z += 360;
 
-            gunForward.localEulerAngles = rotation;
+            ring.localEulerAngles = rotation;
         }
 
         if (Mathf.Abs(rAxisY) > .1f) {
-            Vector3 rotation = gunForward.localRotation.eulerAngles;
-            rotation.z -= rAxisY;
+            Vector3 rotation = barrel.localRotation.eulerAngles;
+            rotation.y += rAxisY;
 
-            rotation.z = Mathf.Clamp(rotation.z, 280f, 359f);
-            gunForward.localEulerAngles = rotation;
+            rotation.y = Mathf.Clamp(rotation.y, 0f, 60f);
+            barrel.localEulerAngles = rotation;
         }
     }
 
@@ -83,7 +62,7 @@ public class playerShooter : MonoBehaviour {
         if (rTrigger >= .9f) {
             RaycastHit hit;
 
-            if (Physics.Raycast(gunForward.position, gunForward.right, out hit)) {
+            if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
                 if (hit.collider.gameObject.tag.Equals("Racer")) {
                     Debug.Log("HIT A CAR!!!");
                     hit.collider.GetComponent<playerRacer>().TeleportToStart();
@@ -95,8 +74,8 @@ public class playerShooter : MonoBehaviour {
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
-        Quaternion syncGunForward = Quaternion.identity;
-        Quaternion syncRotation = Quaternion.identity;
+        Quaternion syncBarrelRotation = Quaternion.identity;
+        Quaternion syncRingRotation = Quaternion.identity;
 
         if (stream.isWriting) {
             syncPosition = transform.position;
@@ -105,16 +84,16 @@ public class playerShooter : MonoBehaviour {
             // = rigidbody.velocity;
             stream.Serialize(ref syncVelocity);
 
-            syncRotation = transform.rotation;
-            stream.Serialize(ref syncRotation);
+            syncBarrelRotation = goBarrel.transform.rotation;
+            stream.Serialize(ref syncBarrelRotation);
 
-            syncGunForward = gunForward.rotation;
-            stream.Serialize(ref syncGunForward);
+            syncRingRotation = goRing.transform.rotation;
+            stream.Serialize(ref syncRingRotation);
         } else {
             stream.Serialize(ref syncPosition);
             stream.Serialize(ref syncVelocity);
-            stream.Serialize(ref syncRotation);
-            stream.Serialize(ref syncGunForward);
+            stream.Serialize(ref syncBarrelRotation);
+            stream.Serialize(ref syncRingRotation);
 
             syncTime = 0f;
             syncDelay = Time.time - lastSynchronizationTime;
@@ -123,15 +102,14 @@ public class playerShooter : MonoBehaviour {
             syncStartPosition = transform.position;
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
 
-            syncStartRotation = syncRotation;
+            goBarrel.transform.rotation = syncBarrelRotation;
 
-            gunForward.rotation = syncGunForward;
+            goRing.transform.rotation = syncRingRotation;
         }
     }
 
     private void SyncedMovement() {
         syncTime += Time.deltaTime;
         transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
-        transform.rotation = syncStartRotation;
     }
 }

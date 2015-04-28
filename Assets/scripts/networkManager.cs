@@ -400,7 +400,7 @@ public class networkManager : MonoBehaviour {
     [RPC]
     private void SpawnPlayerShooter(NetworkPlayer netPlayer, int index) {
         if (netPlayer == Network.player) {
-            GameObject spawn = GameObject.Find("ShootingTrackLocation");
+            GameObject spawn = GameObject.Find("ShooterLocation");
             Debug.Log("spawned player shooter: " + index);
             GameObject shooter = (GameObject)Network.Instantiate(playerShooter, spawn.transform.position, Quaternion.identity, 0);
             shooter.AddComponent<playerShootController>();
