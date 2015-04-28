@@ -75,7 +75,7 @@ public class MenuStuffs : MonoBehaviour {
         if (hostList != null) {
 
             for (int i = 0; i < hostList.Length; i++) {
-               if (hostList[i].connectedPlayers <= hostList[i].playerLimit) {
+               if (hostList[i].connectedPlayers < hostList[i].playerLimit) {
                     GameObject newButton = (GameObject)Instantiate(serverButton);
                     Text[] texts = newButton.GetComponentsInChildren<Text>();
 

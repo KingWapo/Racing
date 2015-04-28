@@ -337,7 +337,10 @@ public class networkManager : MonoBehaviour {
 
         int turretIndex = Random.Range(0, playerList.Count);
 
-        if (playerList.Count >= 2) {
+        //TODO change to 2
+        int minForTurret = 1;
+
+        if (playerList.Count >= minForTurret) {
             networkView.RPC("SpawnPlayerShooter", RPCMode.AllBuffered, playerList[turretIndex], turretIndex);
 
             if (Network.isServer) {
@@ -346,7 +349,7 @@ public class networkManager : MonoBehaviour {
         }
 
         for (int i = 0; i < playerList.Count; i++) {
-            if (playerList.Count < 2 || i != turretIndex) {
+            if (playerList.Count < minForTurret || i != turretIndex) {
                 networkView.RPC("SpawnPlayer", RPCMode.AllBuffered, playerList[i], i);
             }
         }

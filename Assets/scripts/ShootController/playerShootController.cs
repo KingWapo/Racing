@@ -8,13 +8,15 @@ public class playerShootController : MonoBehaviour {
     private playerShooter shooter;
     private int bankedCoins;
 
+    public RenderTexture camTexture;
+
 	// Use this for initialization
 	void Start () {
         shooter = GetComponent<playerShooter>();
 
         if (GetComponent<NetworkView>().isMine) {
             Camera.main.transform.parent = shooter.goRing.transform;
-            Camera.main.transform.localPosition = new Vector3(1.2f, 0, 2.1f);
+            Camera.main.transform.localPosition = new Vector3(.7f, 0, 2.1f);
         }
 	}
 	
