@@ -10,6 +10,8 @@ public class AIController : Controller
     private NavMeshAgent agent;
     private List<GameObject> waypoints;
 
+    private GameObject priorityTarget;
+
 
 	// Use this for initialization
     void Start() {
@@ -39,7 +41,10 @@ public class AIController : Controller
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    if (!priorityTarget)
+        {
+            SetTargetToWaypoint();
+        }
 	}
 
     void OnTriggerEnter(Collider other)
@@ -52,7 +57,21 @@ public class AIController : Controller
             agent.SetDestination(waypoints[targetIndex].transform.position);
             //waypointsHit++;
         }
+
+        if (other.tag == "Coin")
+        {
+            if (!priorityTarget)
+            {
+                priorityTarget = other.gameObject;
+                agent.SetDestination(priorityTarget.transform.position);
+            }
+        }
         
+    }
+
+    public void SetTargetToWaypoint()
+    {
+        agent.SetDestination(waypoints[targetIndex].transform.position);
     }
 
     public override void UpdateMovement()

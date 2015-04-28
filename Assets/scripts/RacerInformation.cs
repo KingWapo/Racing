@@ -57,11 +57,6 @@ public class RacerInformation : MonoBehaviour {
             unbankedCoins = 0;
         }
 
-        if (other.tag == "Coin")
-        {
-            unbankedCoins++;
-            Network.Destroy(other.gameObject);
-        }
     }
 
     void OnCollisionEnter(Collision collision)
@@ -69,6 +64,16 @@ public class RacerInformation : MonoBehaviour {
         if (collision.collider.tag == "Racer")
         {
             racer.BeginSlow();
+        }
+
+        if (collision.collider.tag == "Coin")
+        {
+            unbankedCoins++;
+            Network.Destroy(collision.collider.gameObject);
+            if (GetComponent<AIController>())
+            {
+                
+            }
         }
     }
 
