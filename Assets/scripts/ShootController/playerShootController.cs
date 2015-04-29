@@ -16,7 +16,7 @@ public class playerShootController : MonoBehaviour {
 
         if (GetComponent<NetworkView>().isMine) {
             Camera.main.transform.parent = shooter.goRing.transform;
-            Camera.main.transform.localPosition = new Vector3(.7f, 0, 2.1f);
+            Camera.main.transform.localPosition = new Vector3(1.57f, 0, -3.12f);
         }
 	}
 	
