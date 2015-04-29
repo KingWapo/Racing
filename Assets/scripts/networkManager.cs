@@ -38,6 +38,18 @@ public class networkManager : MonoBehaviour {
 
     private bool receivedHostList;
 
+    // List of AI names
+    private string[] aiNames = {
+                                   "Lolipop",
+                                   "Grum",
+                                   "Scopes",
+                                   "Meh",
+                                   "Iron Man",
+                                   "$",
+                                   "Brandon Sux",
+                                   "Bill"
+                               };
+
     void Awake() {
     }
 	// Use this for initialization
@@ -191,7 +203,8 @@ public class networkManager : MonoBehaviour {
 
     public void EndMatch()
     {
-        NextLevel();
+        //NextLevel();
+        
     }
 
     public bool NextLevel()
@@ -394,7 +407,7 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
-            racer.GetComponent<playerRacer>().playerName = "AI Racer";
+            racer.GetComponent<RacerInformation>().Name = aiNames[Random.Range(0, aiNames.Length)];
 
             racingManager.AddRacer(racer, index);
         }

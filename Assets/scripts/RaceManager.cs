@@ -10,7 +10,6 @@ public class RaceManager : MonoBehaviour {
     public static RaceState State;
 
     private GameObject endScreenPanel;
-    private List<GameObject> players;
 
 	// Use this for initialization
 	void Start () {
@@ -25,10 +24,14 @@ public class RaceManager : MonoBehaviour {
         }
 	}
 
-    public void SetPlayers(List<GameObject> playerInfo)
+    public void SetPlayers(List<GameObject> players)
     {
-        players = playerInfo;
+        GetComponent<NetworkView>().RPC("SetPlayersRPC", RPCMode.AllBuffered, players);
+    }
 
+    [RPC]
+    private void SetPlayersRPC(List<GameObject> players)
+    {
         for (int i = 0; i < players.Count; i++)
         {
             Text txt = endScreenPanel.transform.GetChild(i).gameObject.GetComponent<Text>();
@@ -39,8 +42,9 @@ public class RaceManager : MonoBehaviour {
             }
             else
             {
-                txt.text = /*players[i].GetComponent<playerShootController>().Name +*/ ": " + players[i].GetComponent<RacerInformation>().GetScore() + " -- Shooter";
+                txt.text = players[i].GetComponent<playerShootController>().Name + ": " + players[i].GetComponent<playerShootController>().GetScore() + " -- Shooter";
             }
         }
     }
+
 }

@@ -26,20 +26,18 @@ public class RacingManager : MonoBehaviour {
             {
                 if (racers[i].GetComponent<RacerInformation>().Finished)
                 {
-                    //GetComponent<networkManager>().EndMatch();
-                    //RaceManager.State = RaceState.End;
-                    EndGame();
+                    GetComponent<NetworkView>().RPC("EndGame", RPCMode.AllBuffered);
                 }
             }
             GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
             if (shooter.GetComponent<playerShootController>().Finished)
             {
-                //RaceManager.State = RaceState.End;
-                EndGame();
+                GetComponent<NetworkView>().RPC("EndGame", RPCMode.AllBuffered);
             }
         }
     }
 
+    [RPC]
     private void EndGame()
     {
         RaceManager.State = RaceState.End;
@@ -76,6 +74,11 @@ public class RacingManager : MonoBehaviour {
             if (shooter.GetComponent<playerShootController>().GetScore() > tempList[i].GetComponent<RacerInformation>().GetScore())
             {
                 tempList.Insert(i, shooter);
+                break;
+            }
+            if (i == tempList.Count - 1)
+            {
+                tempList.Add(shooter);
                 break;
             }
         }
