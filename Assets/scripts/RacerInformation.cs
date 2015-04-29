@@ -80,8 +80,6 @@ public class RacerInformation : MonoBehaviour {
             GetComponent<playerRacer>().TeleportToStart();
             FindObjectOfType<playerShootController>().AddCoins(unbankedCoins);
             unbankedCoins = 0;
-
-            Debug.Log("Player hit: " + unbankedCoins);
         }
     }
 

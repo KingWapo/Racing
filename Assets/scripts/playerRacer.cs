@@ -73,12 +73,14 @@ public class playerRacer : MonoBehaviour {
 
     [RPC]
     private void doTeleport() {
-        transform.position = startPoint;
+        rigidbody.position = startPoint;
         transform.rotation = startRotation;
 
         syncStartPosition = startPoint;
         syncEndPosition = startPoint;
         syncStartRotation = startRotation;
+
+        SyncedMovement();
 
         GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
         shooter.GetComponent<playerShootController>().AddCoins(GetComponent<RacerInformation>().unbankedCoins);

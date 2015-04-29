@@ -14,7 +14,7 @@ public class playerShooter : MonoBehaviour {
     private Transform ring;
 
     private float cooldown = 0f;
-    private float maxCooldown = 2f;
+    private float maxCooldown = 1f;
 
     private networkManager networkManager;
 
