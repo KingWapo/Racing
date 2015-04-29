@@ -16,13 +16,6 @@ public class playerShooter : MonoBehaviour {
     private float cooldown = 0f;
     private float maxCooldown = 2f;
 
-    // Synchronization values
-    private float lastSynchronizationTime = 0f;
-    private float syncDelay = 0f;
-    private float syncTime = 0f;
-    private Vector3 syncStartPosition = Vector3.zero;
-    private Vector3 syncEndPosition = Vector3.zero;
-
     private networkManager networkManager;
 
 	// Use this for initialization
@@ -37,7 +30,6 @@ public class playerShooter : MonoBehaviour {
             // player update
             cooldown -= Time.deltaTime;
         } else {
-            SyncedMovement();
         }
 	}
 
@@ -107,21 +99,11 @@ public class playerShooter : MonoBehaviour {
             stream.Serialize(ref syncBarrelRotation);
             stream.Serialize(ref syncRingRotation);
 
-            syncTime = 0f;
-            syncDelay = Time.time - lastSynchronizationTime;
-            lastSynchronizationTime = Time.time;
-
-            syncStartPosition = transform.position;
-            syncEndPosition = syncPosition + syncVelocity * syncDelay;
+            transform.position = syncPosition;
 
             goBarrel.transform.rotation = syncBarrelRotation;
 
             goRing.transform.rotation = syncRingRotation;
         }
-    }
-
-    private void SyncedMovement() {
-        syncTime += Time.deltaTime;
-        transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
     }
 }
