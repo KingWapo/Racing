@@ -44,4 +44,9 @@ public class playerShootController : MonoBehaviour {
     {
         bankedCoins += coins;
     }
+
+    public int GetScore()
+    {
+        return bankedCoins;
+    }
 }

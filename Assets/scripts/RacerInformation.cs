@@ -85,6 +85,11 @@ public class RacerInformation : MonoBehaviour {
         }
     }
 
+    public int GetScore()
+    {
+        return bankedCoins;
+    }
+
     public float Progress()
     {
         if (previousWaypoint)

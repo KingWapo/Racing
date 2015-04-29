@@ -18,46 +18,69 @@ public class RacingManager : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        UpdatePlacement();
-	}
-
-    public void UpdatePlacement()
+    void Update()
     {
-        if (racers.Count > 0)
+        if (racers.Count > 0 && RaceManager.State == RaceState.Occuring)
         {
-            /*places = "Racer 1 " + racers[0].GetComponent<RacerInformation>().Place + " with " + racers[0].GetComponent<RacerInformation>().Progress() + "\n";
-            for (int i = 1; i < racers.Count; i++)
-            {
-                if (racers[i].GetComponent<RacerInformation>().Progress() > racers[i - 1].GetComponent<RacerInformation>().Progress())
-                {
-                    GameObject temp = racers[i - 1];
-                    racers[i - 1] = racers[i];
-                    racers[i] = temp;
-                    racers[i - 1].GetComponent<RacerInformation>().Place = i;
-                    racers[i].GetComponent<RacerInformation>().Place = i + 1;
-                }
-                places += "Racer " + (i + 1) + " " + racers[i].GetComponent<RacerInformation>().Place + " with " + racers[i].GetComponent<RacerInformation>().Progress() + "\n";
-            }
-            //PlacementText.text = places;
-
-            if (racers[0].GetComponent<RacerInformation>().Finished)
-            {
-                GetComponent<networkManager>().NextLevel();
-            }*/
-            
             for (int i = 0; i < racers.Count; i++)
             {
                 if (racers[i].GetComponent<RacerInformation>().Finished)
                 {
-                    GetComponent<networkManager>().EndMatch();
+                    //GetComponent<networkManager>().EndMatch();
+                    //RaceManager.State = RaceState.End;
+                    EndGame();
                 }
             }
             GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
-            if (shooter)
+            if (shooter.GetComponent<playerShootController>().Finished)
             {
+                //RaceManager.State = RaceState.End;
+                EndGame();
             }
         }
+    }
+
+    private void EndGame()
+    {
+        RaceManager.State = RaceState.End;
+
+        List<GameObject> tempList = racers;
+
+        int high = 0;
+        int index = -1;
+
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            for (int j = i; j < tempList.Count; j++)
+            {
+                if (tempList[j].GetComponent<RacerInformation>().GetScore() > high)
+                {
+                    high = tempList[j].GetComponent<RacerInformation>().GetScore();
+                    index = j;
+                }
+            }
+            if (index != i)
+            {
+                GameObject temp = tempList[i];
+                tempList[i] = tempList[index];
+                tempList[index] = temp;
+            }
+            high = 0;
+            index = -1;
+        }
+        
+        GameObject shooter = GameObject.FindGameObjectWithTag("Shooter");
+
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            if (shooter.GetComponent<playerShootController>().GetScore() > tempList[i].GetComponent<RacerInformation>().GetScore())
+            {
+                tempList.Insert(i, shooter);
+                break;
+            }
+        }
+
+        GetComponent<RaceManager>().SetPlayers(tempList);
     }
 
     public void AddRacer(GameObject racer, int startPosition)
