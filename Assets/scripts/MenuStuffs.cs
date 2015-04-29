@@ -38,6 +38,8 @@ public class MenuStuffs : MonoBehaviour {
     public GameObject lobbyAvailableMaps;
     public GameObject mapButton;
 
+    public Button startGameButton;
+
     private HostData requestedHost;
 
     void Start() {
@@ -106,6 +108,11 @@ public class MenuStuffs : MonoBehaviour {
         DisplayMenu(Menu.lobby);
 
         netManager.UpdateClientLevels();
+        if (!Network.isServer) {
+            startGameButton.interactable = false;
+        } else {
+            startGameButton.interactable = true;
+        }
     }
 
     public void UpdateLevelsList(string[] queuedLevels) {
