@@ -3,6 +3,8 @@ using System.Collections;
 
 public class playerShooter : MonoBehaviour {
 
+    public GameObject projectile;
+
     private float sensitivity = .5f;
 
     public GameObject goBarrel;
@@ -10,6 +12,9 @@ public class playerShooter : MonoBehaviour {
 
     private Transform barrel;
     private Transform ring;
+
+    private float cooldown = 0f;
+    private float maxCooldown = 2f;
 
     // Synchronization values
     private float lastSynchronizationTime = 0f;
@@ -30,6 +35,7 @@ public class playerShooter : MonoBehaviour {
 	void Update () {
         if (GetComponent<NetworkView>().isMine) {
             // player update
+            cooldown -= Time.deltaTime;
         } else {
             SyncedMovement();
         }
@@ -59,8 +65,14 @@ public class playerShooter : MonoBehaviour {
     }
 
     public void Shoot(float rTrigger) {
-        if (rTrigger >= .9f) {
+        if (rTrigger >= .9f && cooldown <= 0) {
             RaycastHit hit;
+
+            Quaternion barrelRot = barrel.rotation;
+            barrelRot *= Quaternion.Euler(0, 90, 0);
+            Network.Instantiate(projectile, barrel.position, barrelRot, 0);
+
+            cooldown = maxCooldown;
 
             if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
                 if (hit.collider.gameObject.tag.Equals("Racer")) {
