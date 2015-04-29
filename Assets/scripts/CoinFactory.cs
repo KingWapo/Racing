@@ -17,14 +17,17 @@ public class CoinFactory : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (cooldown <= 0)
+        if (RaceManager.State == RaceState.Occuring)
         {
-            spawnCoin();
-            cooldown = 50;
-        }
-        else
-        {
-            cooldown--;
+            if (cooldown <= 0)
+            {
+                spawnCoin();
+                cooldown = 50;
+            }
+            else
+            {
+                cooldown--;
+            }
         }
 	}
 

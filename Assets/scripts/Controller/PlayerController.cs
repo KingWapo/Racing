@@ -17,7 +17,10 @@ public class PlayerController : Controller {
 	
 	// Update is called once per frame
 	void Update () {
-        UpdateMovement();
+        if (RaceManager.State == RaceState.Occuring)
+        {
+            UpdateMovement();
+        }
 	}
 
     void OnTriggerEnter(Collider other)

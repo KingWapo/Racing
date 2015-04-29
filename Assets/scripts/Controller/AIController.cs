@@ -36,14 +36,17 @@ public class AIController : Controller
             waypoints.Add(WaypointList.transform.GetChild(i).gameObject);
         }
 
-        agent.SetDestination(waypoints[targetIndex].transform.position);
+        //agent.SetDestination(waypoints[targetIndex].transform.position);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	    if (!priorityTarget)
+        if (RaceManager.State == RaceState.Occuring)
         {
-            SetTargetToWaypoint();
+            if (!priorityTarget)
+            {
+                SetTargetToWaypoint();
+            }
         }
 	}
 
