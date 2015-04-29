@@ -75,6 +75,14 @@ public class RacerInformation : MonoBehaviour {
                 
             }
         }
+
+        if (collision.collider.tag == "Bullet") {
+            GetComponent<playerRacer>().TeleportToStart();
+            FindObjectOfType<playerShootController>().AddCoins(unbankedCoins);
+            unbankedCoins = 0;
+
+            Debug.Log("Player hit: " + unbankedCoins);
+        }
     }
 
     void OnCollisionExit(Collision collision)

@@ -6,9 +6,11 @@ public class playerShootController : MonoBehaviour {
     public bool Finished;
 
     private playerShooter shooter;
-    private int bankedCoins;
+    public int bankedCoins;
 
     public RenderTexture camTexture;
+
+    public string Name;
 
 	// Use this for initialization
 	void Start () {
@@ -42,6 +44,11 @@ public class playerShootController : MonoBehaviour {
 
     public void AddCoins(int coins)
     {
+        GetComponent<NetworkView>().RPC("AddCoinsToShooter", RPCMode.AllBuffered, coins);
+    }
+
+    [RPC]
+    private void AddCoinsToShooter(int coins) {
         bankedCoins += coins;
     }
 

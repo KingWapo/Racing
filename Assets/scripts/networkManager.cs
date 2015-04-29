@@ -375,7 +375,7 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
-            racer.GetComponent<playerRacer>().playerName = nameList[index];
+            racer.GetComponent<RacerInformation>().Name = nameList[index];
 
             racingManager.AddRacer(racer, index);
         }
@@ -406,7 +406,8 @@ public class networkManager : MonoBehaviour {
             GameObject spawn = GameObject.Find("ShooterLocation");
             Debug.Log("spawned player shooter: " + index);
             GameObject shooter = (GameObject)Network.Instantiate(playerShooter, spawn.transform.position, Quaternion.identity, 0);
-            shooter.AddComponent<playerShootController>();
+            playerShootController controller = shooter.AddComponent<playerShootController>();
+            controller.Name = nameList[index];
         }
     }
 

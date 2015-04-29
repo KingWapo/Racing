@@ -58,7 +58,7 @@ public class playerShooter : MonoBehaviour {
 
     public void Shoot(float rTrigger) {
         if (rTrigger >= .9f && cooldown <= 0) {
-            RaycastHit hit;
+            //RaycastHit hit;
 
             Quaternion barrelRot = barrel.rotation;
             barrelRot *= Quaternion.Euler(0, 90, 0);
@@ -66,12 +66,12 @@ public class playerShooter : MonoBehaviour {
 
             cooldown = maxCooldown;
 
-            if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
+            /*if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
                 if (hit.collider.gameObject.tag.Equals("Racer")) {
                     Debug.Log("HIT A CAR!!!");
                     hit.collider.GetComponent<playerRacer>().TeleportToStart();
                 }
-            }
+            }*/
         }
     }
 
