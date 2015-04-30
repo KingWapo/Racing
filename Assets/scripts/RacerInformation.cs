@@ -108,4 +108,13 @@ public class RacerInformation : MonoBehaviour {
             return 1.0f / Place;
     }
 
+    public void SetName(string newName) {
+        GetComponent<NetworkView>().RPC("SetClientNames", RPCMode.AllBuffered, newName);
+    }
+
+    [RPC]
+    private void SetClientNames(string newName) {
+        Name = newName;
+    }
+
 }

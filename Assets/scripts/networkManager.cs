@@ -33,8 +33,10 @@ public class networkManager : MonoBehaviour {
 
     private List<NetworkPlayer> playerList;
     private List<string> nameList;
+    /*
     private List<int> unbankedCoins;
     private List<int> bankedCoins;
+    */
 
     private string connectingName;
 
@@ -390,7 +392,7 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject) Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<PlayerController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
-            racer.GetComponent<RacerInformation>().Name = nameList[index];
+            racer.GetComponent<RacerInformation>().SetName(nameList[index]);
 
             racingManager.AddRacer(racer, index);
         }
@@ -409,7 +411,7 @@ public class networkManager : MonoBehaviour {
             GameObject racer = (GameObject)Network.Instantiate(playerRacer, start.position, start.rotation, 0);
             racer.AddComponent<AIController>();
             racer.GetComponent<playerRacer>().SetStartPoint(start.position, start.rotation);
-            racer.GetComponent<RacerInformation>().Name = aiNames[Random.Range(0, aiNames.Length)];
+            racer.GetComponent<RacerInformation>().SetName(aiNames[Random.Range(0, aiNames.Length)]);
 
             racingManager.AddRacer(racer, index);
         }
@@ -422,21 +424,11 @@ public class networkManager : MonoBehaviour {
             Debug.Log("spawned player shooter: " + index);
             GameObject shooter = (GameObject)Network.Instantiate(playerShooter, spawn.transform.position, Quaternion.identity, 0);
             playerShootController controller = shooter.AddComponent<playerShootController>();
-            controller.Name = nameList[index];
+            controller.SetName(nameList[index]);
         }
     }
 
-    [RPC]
-    private void SpawnAIShooter(int index) {
-        // only let server execute function
-        // need both isServer checks to prevent dupe spawns
-        if (Network.isServer) {
-            Debug.Log("spawned ai shooter: " + index);
-            GameObject shooter = (GameObject)Network.Instantiate(playerShooter, Vector3.zero, Quaternion.identity, 0);
-            //racer.AddComponent<AIController>();
-        }
-    }
-
+    /*
     public void AddUnbanked(int coins, int index) {
         networkView.RPC("AddUnbankedCoins", RPCMode.AllBuffered, coins, index);
     }
@@ -455,6 +447,7 @@ public class networkManager : MonoBehaviour {
         bankedCoins[index] += unbankedCoins[index];
         unbankedCoins[index] = 0;
     }
+    */
 
     void OnGUI() {
         /*if (Network.isServer) {

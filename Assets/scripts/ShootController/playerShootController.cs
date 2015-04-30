@@ -57,4 +57,13 @@ public class playerShootController : MonoBehaviour {
     {
         return bankedCoins;
     }
+
+    public void SetName(string newName) {
+        GetComponent<NetworkView>().RPC("SetClientNames", RPCMode.AllBuffered, newName);
+    }
+
+    [RPC]
+    private void SetClientNames(string newName) {
+        Name = newName;
+    }
 }
