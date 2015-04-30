@@ -33,6 +33,8 @@ public class networkManager : MonoBehaviour {
 
     private List<NetworkPlayer> playerList;
     private List<string> nameList;
+    private List<int> unbankedCoins;
+    private List<int> bankedCoins;
 
     private string connectingName;
 
@@ -46,7 +48,7 @@ public class networkManager : MonoBehaviour {
                                    "Meh",
                                    "Iron Man",
                                    "$",
-                                   "Brandon Sux",
+                                   "Adam likes knobs",
                                    "Bill"
                                };
 
@@ -433,6 +435,25 @@ public class networkManager : MonoBehaviour {
             GameObject shooter = (GameObject)Network.Instantiate(playerShooter, Vector3.zero, Quaternion.identity, 0);
             //racer.AddComponent<AIController>();
         }
+    }
+
+    public void AddUnbanked(int coins, int index) {
+        networkView.RPC("AddUnbankedCoins", RPCMode.AllBuffered, coins, index);
+    }
+
+    [RPC]
+    private void AddUnbankedCoins(int coins, int index) {
+        unbankedCoins[index] += coins;
+    }
+
+    public void AddBanked(int index) {
+        networkView.RPC("AddBankedCoins", RPCMode.AllBuffered, index);
+    }
+
+    [RPC]
+    private void AddBankedCoins(int index) {
+        bankedCoins[index] += unbankedCoins[index];
+        unbankedCoins[index] = 0;
     }
 
     void OnGUI() {

@@ -26,24 +26,33 @@ public class RaceManager : MonoBehaviour {
 
     public void SetPlayers(List<GameObject> players)
     {
-        GetComponent<NetworkView>().RPC("SetPlayersRPC", RPCMode.AllBuffered, players);
+        string playerScores = "";
+
+        for (int i = 0; i < players.Count; i++) {
+            if (players[i].GetComponent<RacerInformation>()) {
+                playerScores += players[i].GetComponent<RacerInformation>().Name + ": " + players[i].GetComponent<RacerInformation>().GetScore() + " -- Racer";
+            } else {
+                playerScores += players[i].GetComponent<playerShootController>().Name + ": " + players[i].GetComponent<playerShootController>().GetScore() + " -- Shooter";
+            }
+
+            if (i < players.Count - 1) {
+                playerScores += ",";
+            }
+        }
+
+        GetComponent<NetworkView>().RPC("SetPlayersRPC", RPCMode.AllBuffered, playerScores);
     }
 
     [RPC]
-    private void SetPlayersRPC(List<GameObject> players)
+    private void SetPlayersRPC(string playerScores)
     {
-        for (int i = 0; i < players.Count; i++)
+        string[] players = playerScores.Split(',');
+
+        for (int i = 0; i < players.Length; i++)
         {
             Text txt = endScreenPanel.transform.GetChild(i).gameObject.GetComponent<Text>();
 
-            if (players[i].GetComponent<RacerInformation>())
-            {
-                txt.text = players[i].GetComponent<RacerInformation>().Name + ": " + players[i].GetComponent<RacerInformation>().GetScore() + " -- Racer";
-            }
-            else
-            {
-                txt.text = players[i].GetComponent<playerShootController>().Name + ": " + players[i].GetComponent<playerShootController>().GetScore() + " -- Shooter";
-            }
+            txt.text = players[i];
         }
     }
 

@@ -69,6 +69,7 @@ public class RacerInformation : MonoBehaviour {
         if (collision.collider.tag == "Coin")
         {
             unbankedCoins++;
+            //FindObjectOfType<networkManager>().AddUnbanked(1, 0);
             Network.Destroy(collision.collider.gameObject);
             if (GetComponent<AIController>())
             {

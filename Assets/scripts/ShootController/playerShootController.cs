@@ -44,6 +44,7 @@ public class playerShootController : MonoBehaviour {
 
     public void AddCoins(int coins)
     {
+        //GetComponent<NetworkView>().RPC("AddCoinsToShooter", )
         GetComponent<NetworkView>().RPC("AddCoinsToShooter", RPCMode.AllBuffered, coins);
     }
 
