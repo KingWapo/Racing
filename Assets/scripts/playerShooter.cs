@@ -13,8 +13,8 @@ public class playerShooter : MonoBehaviour {
     private Transform barrel;
     private Transform ring;
 
-    private float cooldown = 0f;
-    private float maxCooldown = 1f;
+    private float charge = 1f;
+    private float maxCharge = 1f;
 
     private networkManager networkManager;
 
@@ -28,7 +28,6 @@ public class playerShooter : MonoBehaviour {
 	void Update () {
         if (GetComponent<NetworkView>().isMine) {
             // player update
-            cooldown -= Time.deltaTime;
         } else {
         }
 	}
@@ -57,21 +56,28 @@ public class playerShooter : MonoBehaviour {
     }
 
     public void Shoot(float rTrigger) {
-        if (rTrigger >= .9f && cooldown <= 0) {
-            //RaycastHit hit;
+        if (rTrigger >= .9f){
+            if (charge >= 0) {
+                //RaycastHit hit;
 
-            Quaternion barrelRot = barrel.rotation;
-            barrelRot *= Quaternion.Euler(0, 90, 0);
-            Network.Instantiate(projectile, barrel.position, barrelRot, 0);
+                Quaternion barrelRot = barrel.rotation;
+                barrelRot *= Quaternion.Euler(0, 90, 0);
+                Network.Instantiate(projectile, barrel.position, barrelRot, 0);
 
-            cooldown = maxCooldown;
+                charge -= Time.deltaTime;
 
-            /*if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
-                if (hit.collider.gameObject.tag.Equals("Racer")) {
-                    Debug.Log("HIT A CAR!!!");
-                    hit.collider.GetComponent<playerRacer>().TeleportToStart();
-                }
-            }*/
+                /*if (Physics.Raycast(barrel.position, barrel.right, out hit)) {
+                    if (hit.collider.gameObject.tag.Equals("Racer")) {
+                        Debug.Log("HIT A CAR!!!");
+                        hit.collider.GetComponent<playerRacer>().TeleportToStart();
+                    }
+                }*/
+            }
+        } else {
+            if (charge < maxCharge) {
+                charge += Time.deltaTime / 2.0f;
+                charge = Mathf.Clamp(charge, 0, 1.0f);
+            }
         }
     }
 
